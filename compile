@@ -1,0 +1,13 @@
+#!/bin/sh
+
+mkdir -p build/mod
+
+gfortran \
+ src/CDMSreader__types.f \
+ src/CDMSreader__constants.f \
+ src/CDMSreader__system.f \
+ src/CDMSreader__readwrite.f \
+ main/CDMSreader.f \
+  --free-form \
+ -J build/mod \
+ -o cdmsreader

@@ -1,0 +1,24 @@
+name = "CDMSreader"
+version = "0.1.0"
+license = "GPL3"
+author = "banana-bred"
+maintainer = "j.forer@posteo.net"
+copyright = "Copyright 2025, banana-bred"
+
+[build]
+auto-executables = true
+auto-examples = true
+module-naming = true
+
+[install]
+library = false
+
+[[executable]]
+main = "CDMSreader.f"
+source-dir = "main"
+name = "cdmsreader"
+
+[fortran]
+implicit-typing = false
+implicit-external = false
+source-form = "free"
