@@ -1,14 +1,4 @@
----
-project: CDMSreader
-summary: Reads molecular transition data taken from the Cologne Database for Molecular Spectroscopy ([CDMS](https://cdms.astro.uni-koeln.de/)) catalogue
-         and determines the lifetimes of various quantum states based on the provided information.
-extensions: f
-fixed_extensions:
-max_frontpage_items: 6
-display: public
-license: gpl3
----
-
+# CDMSreader
 Reads molecular transition data from the Cologne Database for Molecular Spectroscopy ([CDMS](https://cdms.astro.uni-koeln.de/)) catalogue
 to determine the radiative lifetimes of the various states involved in the transitions.
 The data must be obtained in the proper format by using the [search and conversion form](https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch).

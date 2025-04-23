@@ -6,11 +6,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Documentation for Fortran Program">
+      <meta name="description" content="Reads molecular transition data taken from the Cologne Database for Molecular Spectroscopy (CDMS) catalogue and determines the lifetimes of various quantum states based on the provided information.">
     <meta name="author" content="" >
     <link rel="icon" href="../favicon.png">
 
-    <title>All Procedures &ndash; Fortran Program
+    <title>All Procedures &ndash; CDMSreader
 </title>
 
     <!-- Bootstrap -->
@@ -45,7 +45,7 @@
     <div class="container-fluid mb-sm-4 mb-xl-2">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-          <a class="navbar-brand" href="../index.html">Fortran Program </a>
+          <a class="navbar-brand" href="../index.html">CDMSreader </a>
           <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
                   aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon">
@@ -56,6 +56,9 @@
                   <li class="nav-item">
                     <a class="nav-link" href="../lists/files.html">Source Files</a>
                   </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
                 <li class="nav-item">
                   <a class="nav-link" href="../lists/procedures.html">Procedures</a>
                 </li>
@@ -78,10 +81,23 @@
 			 <thead><tr><th>Procedure</th><th>Location</th><th>Procedure Type</th><th>Description</th></tr></thead>
 			 <tbody>
 			   <tr>
-                 <td><a href='../proc/charqn2int.html'>charQN2int</a></td>
-                 <td><a href='../sourcefile/cdmsreader__readwrite.f.html'>CDMSreader__readwrite.f</a></td>
-                 <td>Function</td>
-                 <td><p>Converts the CDMS 2-character representation of integers to actual integers</p></td>
+                 <td><a href='../proc/cdms_readline.html'>CDMS_readline</a></td>
+                 <td><a href='../module/cdmsreader__readwrite.html'>CDMSreader__readwrite</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Read "cat" file from the CDMS contents into appropriate arrays, with the capability to skip lines that are well-commented or blank
+the comment character defaults to "#", but can be set to anything not in the character NUMERIC also not whitespace</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/die.html'>die</a></td>
+                 <td><a href='../module/cdmsreader__system.html'>CDMSreader__system</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Stop program execution with a message</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/write_states.html'>write_states</a></td>
+                 <td><a href='../module/cdmsreader__readwrite.html'>CDMSreader__readwrite</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Writes the states in a legible format to the designated file unit</p></td>
                </tr>
 			 </tbody></table>
              
@@ -94,8 +110,8 @@
         <div class="row justify-content-between">
           <div class="col">
             <p>
-              Fortran Program
-              &copy; 2025 
+              CDMSreader
+              &copy; 2025 gpl3
 </p>
           </div>
           <div class="col">

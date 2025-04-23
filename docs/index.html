@@ -6,11 +6,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Reads molecular transition data taken from the Cologne Database for Molecular Spectroscopy (CDMS) catalogue and determines the lifetimes of various quantum states based on the provided information.">
+      <meta name="description" content="Documentation for Fortran Program">
     <meta name="author" content="" >
     <link rel="icon" href="./favicon.png">
 
-    <title> CDMSreader </title>
+    <title> Fortran Program </title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -44,7 +44,7 @@
     <div class="container-fluid mb-sm-4 mb-xl-2">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-          <a class="navbar-brand" href="./index.html">CDMSreader </a>
+          <a class="navbar-brand" href="./index.html">Fortran Program </a>
           <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
                   aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon">
@@ -56,13 +56,7 @@
                     <a class="nav-link" href="./lists/files.html">Source Files</a>
                   </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="./lists/modules.html">Modules</a>
-                </li>
-                <li class="nav-item">
                   <a class="nav-link" href="./lists/procedures.html">Procedures</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="./lists/types.html">Derived Types</a>
                 </li>
             </ul>
               <div class="d-flex align-items-end flex-grow-1">
@@ -77,16 +71,12 @@
 
     <div class="container">
   <!-- Main component for a primary marketing message or call to action -->
-    <div class="p-5 mb-4 bg-light border rounded-3" id="jumbotron">
-      <p>Reads molecular transition data taken from the Cologne Database for Molecular Spectroscopy (<a href="https://cdms.astro.uni-koeln.de/">CDMS</a>) catalogue
-and determines the lifetimes of various quantum states based on the provided information.</p>
-      </p>
-    </div>
 
       <div class="row" id='text'>
         <div class=col-md-12>
+          <h1>Fortran Program</h1>
           <h1>CDMSreader</h1>
-          <p>Reads molecular transition data from the Cologne Database for Molecular Spectroscopy (<a href="https://cdms.astro.uni-koeln.de/">CDMS</a>) catalogue
+<p>Reads molecular transition data from the Cologne Database for Molecular Spectroscopy (<a href="https://cdms.astro.uni-koeln.de/">CDMS</a>) catalogue
 to determine the radiative lifetimes of the various states involved in the transitions.
 The data must be obtained in the proper format by using the <a href="https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch">search and conversion form</a>.
 The user should ask for <script type="math/tex">A</script> values with the intensities being given as log values.
@@ -134,10 +124,10 @@ Other compilers than gfortran will probably work just fine.</p>
       </div>
         <div class="row">
           <hr>
-          <div class="col-xs-6 col-sm-3">
+          <div class="col-xs-6 col-sm-6">
             <div>
               <h3>Source Files</h3>
-              <ul><li><a href='sourcefile/cdmsreader__constants.f.html'>CDMSreader__constants.f</a></li><li><a href='sourcefile/cdmsreader__readwrite.f.html'>CDMSreader__readwrite.f</a></li><li><a href='sourcefile/cdmsreader__system.f.html'>CDMSreader__system.f</a></li><li><a href='sourcefile/cdmsreader__types.f.html'>CDMSreader__types.f</a></li></ul>
+              <ul><li><a href='sourcefile/cdmsreader__constants.f.html'>CDMSreader__constants.f</a></li><li><a href='sourcefile/cdmsreader__readwrite.f.html'>CDMSreader__readwrite.f</a></li><li><a href='sourcefile/cdmsreader__system.f.html'>CDMSreader__system.f</a></li></ul>
             </div>
             <div>
               <ul>
@@ -145,36 +135,14 @@ Other compilers than gfortran will probably work just fine.</p>
               </ul>
             </div>
           </div>
-          <div class="col-xs-6 col-sm-3">
-            <div>
-              <h3>Modules</h3>
-              <ul><li><a href='module/cdmsreader__constants.html'>CDMSreader__constants</a></li><li><a href='module/cdmsreader__readwrite.html'>CDMSreader__readwrite</a></li><li><a href='module/cdmsreader__system.html'>CDMSreader__system</a></li><li><a href='module/cdmsreader__types.html'>CDMSreader__types</a></li></ul>
-            </div>
-            <div>
-              <ul>
-                <li><a href="./lists/modules.html"><em>All modules&hellip;</em></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-xs-6 col-sm-3">
+          <div class="col-xs-6 col-sm-6">
             <div>
               <h3>Procedures</h3>
-              <ul><li><a href='interface/add_to.html'>add_to</a></li><li><a href='proc/cdms_readline.html'>CDMS_readline</a></li><li><a href='proc/die.html'>die</a></li><li><a href='proc/find_state_number.html'>find_state_number</a></li><li><a href='interface/make_asymtop_state.html'>make_asymtop_state</a></li><li><a href='proc/sort_last_state.html'>sort_last_state</a></li></ul>
+              <ul><li><a href='proc/charqn2int.html'>charQN2int</a></li></ul>
             </div>
             <div>
               <ul>
                 <li><a href="./lists/procedures.html"><em>All procedures&hellip;</em></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <div>
-              <h3>Derived Types</h3>
-              <ul><li><a href='type/asymtop_state.html'>asymtop_state</a></li><li><a href='type/asymtop_state_hfs.html'>asymtop_state_hfs</a></li><li><a href='type/asymtop_state_nohfs.html'>asymtop_state_nohfs</a></li><li><a href='type/asymtop_transition.html'>asymtop_transition</a></li></ul>
-            </div>
-            <div>
-              <ul>
-                <li><a href="./lists/types.html"><em>All derived types&hellip;</em></a></li>
               </ul>
             </div>
           </div>
@@ -186,8 +154,8 @@ Other compilers than gfortran will probably work just fine.</p>
         <div class="row justify-content-between">
           <div class="col">
             <p>
-              CDMSreader
-              &copy; 2025 gpl3
+              Fortran Program
+              &copy; 2025 
 </p>
           </div>
           <div class="col">
