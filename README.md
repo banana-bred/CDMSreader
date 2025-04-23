@@ -6,7 +6,7 @@ The user should ask for \(A\) values with the intensities being given as log val
 Units can be in GHz or inverse centimeters.
 
 For now, this only works for one molecule at a time and only for asymmetric top molecules that correspond to the case of \(Q=23\) (see the [CDMS general](https://cdms.astro.uni-koeln.de/classic/general) documentation for more details).
-Documentation avalable [here](https://banana-bred.github.io/WignerD/).
+Documentation avalable [here](https://banana-bred.github.io/CDMSreader/).
 
 ## Todo:
 - [ ] Add more state types, generalize the types module
