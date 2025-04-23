@@ -1,203 +1,62 @@
+---
+project: CDMSreader
+summary: Reads molecular transition data taken from the Cologne Database for Molecular Spectroscopy ([CDMS](https://cdms.astro.uni-koeln.de/)) catalogue
+         and determines the lifetimes of various quantum states based on the provided information.
+extensions: f
+fixed_extensions:
+max_frontpage_items: 6
+display: public
+license: gpl3
+---
 
-
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Reads molecular transition data taken from the Cologne Database for Molecular Spectroscopy (CDMS) catalogue and determines the lifetimes of various quantum states based on the provided information.">
-    <meta name="author" content="" >
-    <link rel="icon" href="./favicon.png">
-
-    <title> CDMSreader </title>
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <!-- Font Awesome -->
-    <link href="./css/fontawesome.min.css" rel="stylesheet">
-    <link href="./css/brands.min.css" rel="stylesheet">
-    <link href="./css/regular.min.css" rel="stylesheet">
-    <link href="./css/solid.min.css" rel="stylesheet">
-    <link href="./css/v4-font-face.min.css" rel="stylesheet">
-    <link href="./css/v4-shims.min.css" rel="stylesheet">
-    <!-- MathJax -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        TeX: { equationNumbers: { autoNumber: "AMS" } }
-      });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
-            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
-    <!-- Other scripts and stylesheets -->
-    <link href="./css/local.css" rel="stylesheet">
-    <link href="./css/pygments.css" rel="stylesheet">
-    <script src="./js/svg-pan-zoom.min.js"></script>
-  </head>
-
-  <body>
-
-    <!-- Fixed navbar -->
-    <div class="container-fluid mb-sm-4 mb-xl-2">
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container">
-          <a class="navbar-brand" href="./index.html">CDMSreader </a>
-          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
-                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon">
-          </button>
-
-          <div id="navbar" class="navbar-collapse collapse">
-            <ul class="navbar-nav">
-                  <li class="nav-item">
-                    <a class="nav-link" href="./lists/files.html">Source Files</a>
-                  </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="./lists/modules.html">Modules</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="./lists/procedures.html">Procedures</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="./lists/types.html">Derived Types</a>
-                </li>
-            </ul>
-              <div class="d-flex align-items-end flex-grow-1">
-                <form action="./search.html" role="search" class="ms-auto">
-                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
-                </form>
-              </div>
-          </div><!--/.nav-collapse -->
-        </div>
-      </nav>
-    </div>
-
-    <div class="container">
-  <!-- Main component for a primary marketing message or call to action -->
-    <div class="p-5 mb-4 bg-light border rounded-3" id="jumbotron">
-      <p>Reads molecular transition data taken from the Cologne Database for Molecular Spectroscopy (<a href="https://cdms.astro.uni-koeln.de/">CDMS</a>) catalogue
-and determines the lifetimes of various quantum states based on the provided information.</p>
-      </p>
-    </div>
-
-      <div class="row" id='text'>
-        <div class=col-md-12>
-          <h1>CDMSreader</h1>
-          <p>Reads molecular transition data from the Cologne Database for Molecular Spectroscopy (<a href="https://cdms.astro.uni-koeln.de/">CDMS</a>) catalogue
+Reads molecular transition data from the Cologne Database for Molecular Spectroscopy ([CDMS](https://cdms.astro.uni-koeln.de/)) catalogue
 to determine the radiative lifetimes of the various states involved in the transitions.
-The data must be obtained in the proper format by using the <a href="https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch">search and conversion form</a>.
-The user should ask for <script type="math/tex">A</script> values with the intensities being given as log values.
-Units can be in GHz or inverse centimeters.</p>
-<p>For now, this only works for one molecule at a time and only for asymmetric top molecules that correspond to the case of <script type="math/tex">Q=23</script> (see the <a href="https://cdms.astro.uni-koeln.de/classic/general">CDMS general</a> documentation for more details).</p>
-<p>Two sets of output data are produced.
-The first set contains the lifetimes for the states with the quantum number <script type="math/tex">F</script>, the second does a statistical average over <script type="math/tex">F</script>.</p>
-<h2>Todo:</h2>
-<ul>
-<li>[ ] Add more state types, generalize the types module</li>
-<li>[ ] Organize the types module into submodules for better clarity</li>
-<li>[ ] Add other state types corresponding to different Qs</li>
-<li>[ ] Add the ability to work with different isotopologues/molecules at once so that we can just use one file</li>
-</ul>
-<h2>Determining the liftimes of excited states.</h2>
-<p>Atoms and molecules can be found in excited states in various media, but these excited states have finite lifetimes because they spontaneously decause to lower-lying states.
+The data must be obtained in the proper format by using the [search and conversion form](https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch).
+The user should ask for \(A\) values with the intensities being given as log values.
+Units can be in GHz or inverse centimeters.
+
+For now, this only works for one molecule at a time and only for asymmetric top molecules that correspond to the case of \(Q=23\) (see the [CDMS general](https://cdms.astro.uni-koeln.de/classic/general) documentation for more details).
+
+Two sets of output data are produced.
+The first set contains the lifetimes for the states with the quantum number \(F\), the second does a statistical average over \(F\).
+
+Docs available [here](https://banana-bred.github.io/CDMSreader/).
+
+## Todo:
+- [ ] Add more state types, generalize the types module
+- [ ] Organize the types module into submodules for better clarity
+- [ ] Add other state types corresponding to different Qs
+- [ ] Add the ability to work with different isotopologues/molecules at once so that we can just use one file
+
+## Determining the liftimes of excited states.
+Atoms and molecules can be found in excited states in various media, but these excited states have finite lifetimes because they spontaneously decause to lower-lying states.
 The ground state is only stable because there is no lower state to which the system could decay on its own.
 When an atom/molecule spontaneously decays, it emits radiation as a way of cooling, so to speak.
-The Einstein A coefficients <script type="math/tex">A_{u\to l}</script> describe the probability per unit time that the atom/molecule in level <script type="math/tex">u</script> will spontaneously decay to level <script type="math/tex">l</script>, emitting a photon of frequency <script type="math/tex">\nu</script>.
+The Einstein A coefficients \(A_{u\to l}\) describe the probability per unit time that the atom/molecule in level \(u\) will spontaneously decay to level \(l\), emitting a photon of frequency \(\nu\).
 The probability per unit time that the system decays into any of the available lower states is just given by the sum of the Einstein A coefficients for transitions starting from that state:
-<script type="math/tex; mode=display"> A_u = \sum\limits_l A_{u\to l}. </script>
-We can then take the invese of this to get the average lifetime of a specific state, <script type="math/tex">\tau_u = 1/A_u</script>.</p>
-<p>The CDMS <a href="https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch">search and conversion form</a> already does the work of determining the Einstein A coefficients.
+$$ A_u = \sum\limits_l A_{u\to l}. $$
+We can then take the invese of this to get the average lifetime of a specific state, \(\tau_u = 1/A_u\).
+
+The CDMS [search and conversion form](https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch) already does the work of determining the Einstein A coefficients.
 This code just reads several transitions, determines which states are involved, and then just adds the Einstein A coefficients for the corresponding state to determine the lifetimes.
-You can add headers to the file or stream containing the transitions so long as they're commented with <code>#</code>.
-The format is very delicate, so make sure not to alter the transition lines.</p>
-<h2>Installation</h2>
-<p>This is available as a Fortran Package Manager (<a href="https://fpm.fortran-lang.org/">fpm</a>) package, so it can just be built with the usual build command in the cloned repository</p>
-<div class="codehilite"><pre><span></span><code>fpm build
-</code></pre></div>
+You can add headers to the file or stream containing the transitions so long as they're commented with `#`.
+The format is very delicate, so make sure not to alter the transition lines.
 
-<p>The package can be built without <code>fpm</code>.
-On linux, just use the provided <code>compile</code> script.
-Other compilers than gfortran will probably work just fine.</p>
-<h2>Usage</h2>
-<p>The program expects to read transitions from standard input, so you can just feed it in like so:</p>
-<div class="codehilite"><pre><span></span><code>./CDMSreader &lt; transitions.dat &gt; lifetimes.txt
-</code></pre></div>
+## Installation
+This is available as a Fortran Package Manager ([fpm](https://fpm.fortran-lang.org/)) package, so it can just be built with the usual build command in the cloned repository
+```
+fpm build
+```
+The package can be built without `fpm`.
+On linux, just use the provided `compile` script.
+Other compilers than gfortran will probably work just fine.
 
-<p>or even with <code>fpm</code> if you built the program that way</p>
-<div class="codehilite"><pre><span></span><code>fpm run &lt; transitions.dat &gt; lifetimes.txt
-</code></pre></div>
-        </div>
-      </div>
-        <div class="row">
-          <hr>
-          <div class="col-xs-6 col-sm-3">
-            <div>
-              <h3>Source Files</h3>
-              <ul><li><a href='sourcefile/cdmsreader__constants.f.html'>CDMSreader__constants.f</a></li><li><a href='sourcefile/cdmsreader__readwrite.f.html'>CDMSreader__readwrite.f</a></li><li><a href='sourcefile/cdmsreader__system.f.html'>CDMSreader__system.f</a></li><li><a href='sourcefile/cdmsreader__types.f.html'>CDMSreader__types.f</a></li></ul>
-            </div>
-            <div>
-              <ul>
-                <li><a href="./lists/files.html"><em>All source files&hellip;</em></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <div>
-              <h3>Modules</h3>
-              <ul><li><a href='module/cdmsreader__constants.html'>CDMSreader__constants</a></li><li><a href='module/cdmsreader__readwrite.html'>CDMSreader__readwrite</a></li><li><a href='module/cdmsreader__system.html'>CDMSreader__system</a></li><li><a href='module/cdmsreader__types.html'>CDMSreader__types</a></li></ul>
-            </div>
-            <div>
-              <ul>
-                <li><a href="./lists/modules.html"><em>All modules&hellip;</em></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <div>
-              <h3>Procedures</h3>
-              <ul><li><a href='interface/add_to.html'>add_to</a></li><li><a href='proc/cdms_readline.html'>CDMS_readline</a></li><li><a href='proc/die.html'>die</a></li><li><a href='proc/find_state_number.html'>find_state_number</a></li><li><a href='interface/make_asymtop_state.html'>make_asymtop_state</a></li><li><a href='proc/sort_last_state.html'>sort_last_state</a></li></ul>
-            </div>
-            <div>
-              <ul>
-                <li><a href="./lists/procedures.html"><em>All procedures&hellip;</em></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <div>
-              <h3>Derived Types</h3>
-              <ul><li><a href='type/asymtop_state.html'>asymtop_state</a></li><li><a href='type/asymtop_state_hfs.html'>asymtop_state_hfs</a></li><li><a href='type/asymtop_state_nohfs.html'>asymtop_state_nohfs</a></li><li><a href='type/asymtop_transition.html'>asymtop_transition</a></li></ul>
-            </div>
-            <div>
-              <ul>
-                <li><a href="./lists/types.html"><em>All derived types&hellip;</em></a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      <hr>
-    </div> <!-- /container -->
-    <footer>
-      <div class="container">
-        <div class="row justify-content-between">
-          <div class="col">
-            <p>
-              CDMSreader
-              &copy; 2025 gpl3
-</p>
-          </div>
-          <div class="col">
-            <p class="text-end">
-              Documentation generated by
-              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
-            </p>
-          </div>
-        </div>
-        <br>
-      </div> <!-- /container -->
-    </footer>
-  </body>
-</html>
+## Usage
+The program expects to read transitions from standard input, so you can just feed it in like so:
+```
+./CDMSreader < transitions.dat > lifetimes.txt
+```
+or even with `fpm` if you built the program that way
+```
+fpm run < transitions.dat > lifetimes.txt
+```
