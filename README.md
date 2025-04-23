@@ -31,6 +31,11 @@ This code just reads several transitions, determines which states are involved, 
 You can add headers to the file or stream containing the transitions so long as they're commented with `#`.
 The format is very delicate, so make sure not to alter the transition lines.
 
+**IMPORANT NOTE**
+
+States that are involved in transitions as lower states but never as upper states will not have an A coefficient, and will therefore have an infinite lifetime.
+This may be because it's the ground state, but it might also just be because there are no transitions from that state in the provided input data.
+
 ## Installation
 This is available as a Fortran Package Manager ([fpm](https://fpm.fortran-lang.org/)) package, so it can just be built with the usual build command in the cloned repository
 ```

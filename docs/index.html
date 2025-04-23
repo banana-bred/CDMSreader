@@ -114,6 +114,9 @@ We can then take the invese of this to get the average lifetime of a specific st
 This code just reads several transitions, determines which states are involved, and then just adds the Einstein A coefficients for the corresponding state to determine the lifetimes.
 You can add headers to the file or stream containing the transitions so long as they're commented with <code>#</code>.
 The format is very delicate, so make sure not to alter the transition lines.</p>
+<p><strong>IMPORANT NOTE</strong></p>
+<p>States that are involved in transitions as lower states but never as upper states will not have an A coefficient, and will therefore have an infinite lifetime.
+This may be because it's the ground state, but it might also just be because there are no transitions from that state in the provided input data.</p>
 <h2>Installation</h2>
 <p>This is available as a Fortran Package Manager (<a href="https://fpm.fortran-lang.org/">fpm</a>) package, so it can just be built with the usual build command in the cloned repository</p>
 <div class="codehilite"><pre><span></span><code>fpm build
