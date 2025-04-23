@@ -28,6 +28,9 @@ This code just reads several transitions, determines which states are involved, 
 You can add headers to the file or stream containing the transitions so long as they're commented with `#`.
 The format is very delicate, so make sure not to alter the transition lines.
 
+Two sets of output data are produced.
+The first set contains the lifetimes for the states with the quantum number \(F\), the second does a statistical average over \(F\).
+
 ## Installation
 This is available as a Fortran Package Manager ([fpm](https://fpm.fortran-lang.org/)) package, so it can just be built with the usual build command in the cloned repository
 ```
