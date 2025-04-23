@@ -24,7 +24,7 @@ The ground state is only stable because there is no lower state to which the sys
 When an atom/molecule spontaneously decays, it emits radiation as a way of cooling, so to speak.
 The Einstein A coefficients $$A_{u\to l}$$ describe the probability per unit time that the atom/molecule in level $$u$$ will spontaneously decay to level $$l$$, emitting a photon of frequency $$\nu$$.
 The probability per unit time that the system decays into any of the available lower states is just given by the sum of the Einstein A coefficients for transitions starting from that state:
-$ A_u = \sum\limits_l A_{u\to l}.$$
+$$A_u = \sum\limits_l A_{u\to l}.$$
 We can then take the invese of this to get the average lifetime of a specific state, $$\tau_u = 1/A_u$$.
 
 The CDMS [search and conversion form](https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch) already does the work of determining the Einstein A coefficients.
