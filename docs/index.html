@@ -86,7 +86,50 @@ and determines the lifetimes of various quantum states based on the provided inf
       <div class="row" id='text'>
         <div class=col-md-12>
           <h1>CDMSreader</h1>
-          <p>{!README.md}</p>
+          <p>Reads molecular transition data from the Cologne Database for Molecular Spectroscopy (<a href="https://cdms.astro.uni-koeln.de/">CDMS</a>) catalogue
+to determine the radiative lifetimes of the various states involved in the transitions.
+The data must be obtained in the proper format by using the <a href="https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch">search and conversion form</a>.
+The user should ask for A values with the intensities being given as log values.
+Units can be in GHz or inverse centimeters.</p>
+<p>For now, this only works for one molecule at a time and only for asymmetric top molecules that correspond to the case of Q=23 (see the <a href="https://cdms.astro.uni-koeln.de/classic/general">CDMS general</a> documentation for more details).</p>
+<p>Two sets of output data are produced.
+The first set contains the lifetimes for the states with the quantum number F, the second does a statistical average over F.</p>
+<p>Docs available <a href="https://banana-bred.github.io/CDMSreader/">here</a>.</p>
+<h2>Todo:</h2>
+<ul>
+<li>[ ] Add more state types, generalize the types module</li>
+<li>[ ] Organize the types module into submodules for better clarity</li>
+<li>[ ] Add other state types corresponding to different Qs</li>
+<li>[ ] Add the ability to work with different isotopologues/molecules at once so that we can just use one file</li>
+</ul>
+<h2>Determining the liftimes of excited states.</h2>
+<p>Atoms and molecules can be found in excited states in various media, but these excited states have finite lifetimes because they spontaneously decause to lower-lying states.
+The ground state is only stable because there is no lower state to which the system could decay on its own.
+When an atom/molecule spontaneously decays, it emits radiation as a way of cooling, so to speak.
+The Einstein A coefficients <script type="math/tex; mode=display">A_{u\to l}</script> describe the probability per unit time that the atom/molecule in level u will spontaneously decay to level l, emitting a photon of frequency ν.
+The probability per unit time that the system decays into any of the available lower states is just given by the sum of the Einstein A coefficients for transitions starting from that state:
+<script type="math/tex; mode=display">A_u = \sum\limits_l A_{u\to l}.</script>
+We can then take the invese of this to get the average lifetime of a specific state, <script type="math/tex; mode=display">\tau_u = 1/A_u</script>.</p>
+<p>The CDMS <a href="https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch">search and conversion form</a> already does the work of determining the Einstein A coefficients.
+This code just reads several transitions, determines which states are involved, and then just adds the Einstein A coefficients for the corresponding state to determine the lifetimes.
+You can add headers to the file or stream containing the transitions so long as they're commented with <code>#</code>.
+The format is very delicate, so make sure not to alter the transition lines.</p>
+<h2>Installation</h2>
+<p>This is available as a Fortran Package Manager (<a href="https://fpm.fortran-lang.org/">fpm</a>) package, so it can just be built with the usual build command in the cloned repository</p>
+<div class="codehilite"><pre><span></span><code>fpm build
+</code></pre></div>
+
+<p>The package can be built without <code>fpm</code>.
+On linux, just use the provided <code>compile</code> script.
+Other compilers than gfortran will probably work just fine.</p>
+<h2>Usage</h2>
+<p>The program expects to read transitions from standard input, so you can just feed it in like so:</p>
+<div class="codehilite"><pre><span></span><code>./CDMSreader &lt; transitions.dat &gt; lifetimes.txt
+</code></pre></div>
+
+<p>or even with <code>fpm</code> if you built the program that way</p>
+<div class="codehilite"><pre><span></span><code>fpm run &lt; transitions.dat &gt; lifetimes.txt
+</code></pre></div>
         </div>
       </div>
         <div class="row">

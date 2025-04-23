@@ -9,4 +9,4 @@ display: public
 license: gpl3
 ---
 
-{!README.md}
+{!README.md!}
