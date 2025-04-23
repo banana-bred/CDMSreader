@@ -6,11 +6,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Documentation for Fortran Program">
+      <meta name="description" content="Reads molecular transition data taken from the Cologne Database for Molecular Spectroscopy (CDMS) catalogue and determines the lifetimes of various quantum states based on the provided information.">
     <meta name="author" content="" >
     <link rel="icon" href="../favicon.png">
 
-    <title>CDMSreader__system.f &ndash; Fortran Program</title>
+    <title>CDMSreader__system.f &ndash; CDMSreader</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -44,7 +44,7 @@
     <div class="container-fluid mb-sm-4 mb-xl-2">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-          <a class="navbar-brand" href="../index.html">Fortran Program </a>
+          <a class="navbar-brand" href="../index.html">CDMSreader </a>
           <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
                   aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon">
@@ -56,7 +56,13 @@
                     <a class="nav-link" href="../lists/files.html">Source Files</a>
                   </li>
                 <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
                   <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
                 </li>
             </ul>
               <div class="d-flex align-items-end flex-grow-1">
@@ -79,10 +85,11 @@
     <div class="row align-items-center justify-content-between" id="info-bar">
       <div class="col">
         <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> gpl3</li>
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="12.9% of total for source files.">8 statements</a>
+                 title=" 4.3% of total for source files.">24 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -118,7 +125,18 @@
   
   
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#mods-0"
+         aria-expanded="false" aria-controls="mods-0">
+         <h4 class="card-header bg-primary text-white">Modules</h4>
+      </a>
+      <div id="mods-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/cdmsreader__system.html">CDMSreader__system</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -145,48 +163,48 @@
 
     </div>
     <div class="col-md-9" id='text'>
-      <p>Stop program execution with a message</p>
+      
       <br>
-<br>
+
       <section>
         <h2><span class="anchor" id="src"></span>Source Code</h2>
         <div class="hl codehilite"><pre><span></span><a id="ln-1" name="ln-1" href="#ln-1"></a><span class="c">! ================================================================================================================================ !</span>
-<a id="ln-2" name="ln-2" href="#ln-2"></a><span class="nl">modul</span><span class="gs">e</span><span class="w"> </span><span class="n">CDMSreader__system</span>
+<a id="ln-2" name="ln-2" href="#ln-2"></a><span class="k">module </span><span class="n">CDMSreader__system</span>
 <a id="ln-3" name="ln-3" href="#ln-3"></a><span class="c">! ================================================================================================================================ !</span>
 <a id="ln-4" name="ln-4" href="#ln-4"></a>
-<a id="ln-5" name="ln-5" href="#ln-5"></a><span class="nl">  imp</span><span class="gs">l</span><span class="n">icit</span><span class="w"> </span><span class="k">none</span>
+<a id="ln-5" name="ln-5" href="#ln-5"></a><span class="w">  </span><span class="k">implicit none</span>
 <a id="ln-6" name="ln-6" href="#ln-6"></a>
-<a id="ln-7" name="ln-7" href="#ln-7"></a><span class="nl">  pri</span><span class="gs">v</span><span class="n">ate</span>
+<a id="ln-7" name="ln-7" href="#ln-7"></a><span class="k">  private</span>
 <a id="ln-8" name="ln-8" href="#ln-8"></a>
-<a id="ln-9" name="ln-9" href="#ln-9"></a><span class="nl">  pub</span><span class="gs">l</span><span class="n">ic</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">die</span>
+<a id="ln-9" name="ln-9" href="#ln-9"></a><span class="k">  public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">die</span>
 <a id="ln-10" name="ln-10" href="#ln-10"></a>
 <a id="ln-11" name="ln-11" href="#ln-11"></a><span class="c">! ================================================================================================================================ !</span>
-<a id="ln-12" name="ln-12" href="#ln-12"></a><span class="c">contains</span>
+<a id="ln-12" name="ln-12" href="#ln-12"></a><span class="k">contains</span>
 <a id="ln-13" name="ln-13" href="#ln-13"></a><span class="c">! ================================================================================================================================ !</span>
 <a id="ln-14" name="ln-14" href="#ln-14"></a>
 <a id="ln-15" name="ln-15" href="#ln-15"></a><span class="c">! -------------------------------------------------------------------------------------------------------------------------------- !</span>
-<a id="ln-16" name="ln-16" href="#ln-16"></a><span class="nl">subro</span><span class="gs">u</span><span class="n">tine</span><span class="w"> </span><span class="n">die</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-<a id="ln-17" name="ln-17" href="#ln-17"></a><span class="c">  !! Stop program execution with a message</span>
-<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="nl">  use</span><span class="gs">,</span><span class="w"> </span><span class="k">intrinsic</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iso_fortran_env</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">stderr</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">error_unit</span>
-<a id="ln-19" name="ln-19" href="#ln-19"></a><span class="nl">  imp</span><span class="gs">l</span><span class="n">icit</span><span class="w"> </span><span class="k">none</span>
-<a id="ln-20" name="ln-20" href="#ln-20"></a><span class="nl">  cha</span><span class="gs">r</span><span class="n">acter</span><span class="p">(</span><span class="o">*</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">message</span>
-<a id="ln-21" name="ln-21" href="#ln-21"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="o">*</span><span class="p">)</span>
-<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="err">&#39;</span><span class="p">(</span><span class="err">&quot;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><span class="c">@@@@@@@@@@@@@&quot;)&#39;)</span>
-<a id="ln-23" name="ln-23" href="#ln-23"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="err">&#39;</span><span class="p">(</span><span class="err">&quot;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><span class="c">@@@@@@@@@@@@@&quot;)&#39;)</span>
-<a id="ln-24" name="ln-24" href="#ln-24"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="err">&#39;</span><span class="p">(</span><span class="err">&quot;@@@@</span><span class="w">                                                  </span><span class="c">         @@@@&quot;)&#39;)</span>
-<a id="ln-25" name="ln-25" href="#ln-25"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="err">&#39;</span><span class="p">(</span><span class="err">&quot;@@@@</span><span class="w">                          </span><span class="n">ERROR</span><span class="w">                   </span><span class="c">         @@@@&quot;)&#39;)</span>
-<a id="ln-26" name="ln-26" href="#ln-26"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="err">&#39;</span><span class="p">(</span><span class="err">&quot;@@@@</span><span class="w">                                                  </span><span class="c">         @@@@&quot;)&#39;)</span>
-<a id="ln-27" name="ln-27" href="#ln-27"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="err">&#39;</span><span class="p">(</span><span class="err">&quot;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><span class="c">@@@@@@@@@@@@@&quot;)&#39;)</span>
-<a id="ln-28" name="ln-28" href="#ln-28"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="err">&#39;</span><span class="p">(</span><span class="err">&quot;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><span class="c">@@@@@@@@@@@@@&quot;)&#39;)</span>
-<a id="ln-29" name="ln-29" href="#ln-29"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="o">*</span><span class="p">)</span>
-<a id="ln-30" name="ln-30" href="#ln-30"></a><span class="nl">  if(</span><span class="gs">.</span><span class="nb">not</span><span class="p">.</span><span class="nb">present</span><span class="p">(</span><span class="n">message</span><span class="p">))</span><span class="w"> </span><span class="k">error stop</span>
-<a id="ln-31" name="ln-31" href="#ln-31"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s1">&#39;(&quot;STOP&quot;,X,&quot;::&quot;,X,A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="n">message</span>
-<a id="ln-32" name="ln-32" href="#ln-32"></a><span class="nl">  wri</span><span class="gs">t</span><span class="n">e</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="o">*</span><span class="p">)</span>
-<a id="ln-33" name="ln-33" href="#ln-33"></a><span class="nl">  err</span><span class="gs">o</span><span class="n">r</span><span class="w"> </span><span class="k">stop</span>
-<a id="ln-34" name="ln-34" href="#ln-34"></a><span class="nl">end s</span><span class="gs">u</span><span class="n">broutine</span><span class="w"> </span><span class="n">die</span>
+<a id="ln-16" name="ln-16" href="#ln-16"></a><span class="k">subroutine </span><span class="n">die</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<a id="ln-17" name="ln-17" href="#ln-17"></a><span class="w">  </span><span class="c">!! Stop program execution with a message</span>
+<a id="ln-18" name="ln-18" href="#ln-18"></a><span class="w">  </span><span class="k">use</span><span class="p">,</span><span class="w"> </span><span class="k">intrinsic</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iso_fortran_env</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">stderr</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">error_unit</span>
+<a id="ln-19" name="ln-19" href="#ln-19"></a><span class="w">  </span><span class="k">implicit none</span>
+<a id="ln-20" name="ln-20" href="#ln-20"></a><span class="k">  </span><span class="kt">character</span><span class="p">(</span><span class="o">*</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">message</span>
+<a id="ln-21" name="ln-21" href="#ln-21"></a><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="o">*</span><span class="p">)</span>
+<a id="ln-22" name="ln-22" href="#ln-22"></a><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s1">&#39;(&quot;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&quot;)&#39;</span><span class="p">)</span>
+<a id="ln-23" name="ln-23" href="#ln-23"></a><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s1">&#39;(&quot;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&quot;)&#39;</span><span class="p">)</span>
+<a id="ln-24" name="ln-24" href="#ln-24"></a><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s1">&#39;(&quot;@@@@                                                           @@@@&quot;)&#39;</span><span class="p">)</span>
+<a id="ln-25" name="ln-25" href="#ln-25"></a><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s1">&#39;(&quot;@@@@                          ERROR                            @@@@&quot;)&#39;</span><span class="p">)</span>
+<a id="ln-26" name="ln-26" href="#ln-26"></a><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s1">&#39;(&quot;@@@@                                                           @@@@&quot;)&#39;</span><span class="p">)</span>
+<a id="ln-27" name="ln-27" href="#ln-27"></a><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s1">&#39;(&quot;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&quot;)&#39;</span><span class="p">)</span>
+<a id="ln-28" name="ln-28" href="#ln-28"></a><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s1">&#39;(&quot;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&quot;)&#39;</span><span class="p">)</span>
+<a id="ln-29" name="ln-29" href="#ln-29"></a><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="o">*</span><span class="p">)</span>
+<a id="ln-30" name="ln-30" href="#ln-30"></a><span class="w">  </span><span class="k">if</span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="nb">present</span><span class="p">(</span><span class="n">message</span><span class="p">))</span><span class="w"> </span><span class="k">error stop</span>
+<a id="ln-31" name="ln-31" href="#ln-31"></a><span class="k">  write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s1">&#39;(&quot;STOP&quot;,X,&quot;::&quot;,X,A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="n">message</span>
+<a id="ln-32" name="ln-32" href="#ln-32"></a><span class="w">  </span><span class="k">write</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="o">*</span><span class="p">)</span>
+<a id="ln-33" name="ln-33" href="#ln-33"></a><span class="w">  </span><span class="k">error stop</span>
+<a id="ln-34" name="ln-34" href="#ln-34"></a><span class="k">end subroutine </span><span class="n">die</span>
 <a id="ln-35" name="ln-35" href="#ln-35"></a>
 <a id="ln-36" name="ln-36" href="#ln-36"></a><span class="c">! ================================================================================================================================ !</span>
-<a id="ln-37" name="ln-37" href="#ln-37"></a><span class="nl">end m</span><span class="gs">o</span><span class="n">dule</span><span class="w"> </span><span class="n">CDMSreader__system</span>
+<a id="ln-37" name="ln-37" href="#ln-37"></a><span class="k">end module </span><span class="n">CDMSreader__system</span>
 <a id="ln-38" name="ln-38" href="#ln-38"></a><span class="c">! ================================================================================================================================ !</span>
 </pre></div>
 
@@ -201,8 +219,8 @@
         <div class="row justify-content-between">
           <div class="col">
             <p>
-              Fortran Program
-              &copy; 2025 
+              CDMSreader
+              &copy; 2025 gpl3
 </p>
           </div>
           <div class="col">

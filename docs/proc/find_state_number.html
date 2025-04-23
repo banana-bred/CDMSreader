@@ -10,7 +10,7 @@
     <meta name="author" content="" >
     <link rel="icon" href="../favicon.png">
 
-    <title>CDMSreader__constants.f &ndash; CDMSreader</title>
+    <title>find_state_number &ndash; CDMSreader</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -77,8 +77,8 @@
 
     <div class="container">
   <div class="row">
-    <h1>CDMSreader__constants.f
-      <small>Source File</small>
+    <h1>find_state_number
+      <small>Subroutine</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -89,19 +89,21 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.6% of total for source files.">9 statements</a>
+                 title="11.1% of total for procedures.">27 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/CDMSreader__constants.f"> Source File</a>
+              <a href="../src/CDMSreader__types.f"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-            <li class="breadcrumb-item active" aria-current="page">CDMSreader__constants.f</li>
+                <li class="breadcrumb-item"><a href='../sourcefile/cdmsreader__types.f.html'>CDMSreader__types.f</a></li>
+                <li class="breadcrumb-item"><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></li>
+            <li class="breadcrumb-item active" aria-current="page">find_state_number</li>
           </ol>
         </nav>
       </div>
@@ -116,27 +118,16 @@
   </script>
 
   </div>
+  
   <div class="row">
     <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
-        <div id="sidebar">
+      <div id="sidebar">
       <h3>Contents</h3>
   
   
   
   
   
-      <div class="card mb-4">
-      <a data-bs-toggle="collapse" href="#mods-0"
-         aria-expanded="false" aria-controls="mods-0">
-         <h4 class="card-header bg-primary text-white">Modules</h4>
-      </a>
-      <div id="mods-0" class="collapse">
-        <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/cdmsreader__constants.html">CDMSreader__constants</a>
-        </div>
-      </div>
-    </div>
-
   
   
   
@@ -151,43 +142,105 @@
   
   
   
-    <div class="card card-primary">
-      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
-      <div class="list-group">
-        <a class="list-group-item" href="../sourcefile/cdmsreader__constants.f.html#src">CDMSreader__constants.f</a>
-      </div>
-    </div>
+  
 
 
   </div>
 
     </div>
+    
     <div class="col-md-9" id='text'>
-      
-      <br>
+    <h2>public  subroutine find_state_number(state, states, i)  
+</h2>
+        <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='../module/cdmsreader__system.html'>CDMSreader__system</a></li>
+              </ul>
+            </li>
+        </ul>
+      </div>
+    </div>
 
-      <section>
-        <h2><span class="anchor" id="src"></span>Source Code</h2>
-        <div class="hl codehilite"><pre><span></span><a id="ln-1" name="ln-1" href="#ln-1"></a><span class="c">! ================================================================================================================================ !</span>
-<a id="ln-2" name="ln-2" href="#ln-2"></a><span class="k">module </span><span class="n">CDMSreader__constants</span>
-<a id="ln-3" name="ln-3" href="#ln-3"></a><span class="w">  </span><span class="c">!! Contains special numbers and conversion factors</span>
-<a id="ln-4" name="ln-4" href="#ln-4"></a><span class="w">  </span><span class="k">use </span><span class="n">CDMSreader__types</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">dp</span>
-<a id="ln-5" name="ln-5" href="#ln-5"></a>
-<a id="ln-6" name="ln-6" href="#ln-6"></a><span class="w">  </span><span class="k">implicit none</span>
-<a id="ln-7" name="ln-7" href="#ln-7"></a>
-<a id="ln-8" name="ln-8" href="#ln-8"></a><span class="k">  private</span>
-<a id="ln-9" name="ln-9" href="#ln-9"></a>
-<a id="ln-10" name="ln-10" href="#ln-10"></a><span class="k">  </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">au2invcm</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">21947</span><span class="mf">4.6313710e0_dp</span><span class="w"> </span><span class="c">! -- atomic units -&gt; inverse centimeters</span>
-<a id="ln-11" name="ln-11" href="#ln-11"></a><span class="w">  </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">au2eV</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="mf">7.2113834e0_dp</span><span class="w">     </span><span class="c">! -- atomic units -&gt; electron volts</span>
-<a id="ln-12" name="ln-12" href="#ln-12"></a><span class="w">  </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">c_light</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">299792458</span><span class="w"> </span><span class="c">! -- speed of light in m/s</span>
-<a id="ln-13" name="ln-13" href="#ln-13"></a><span class="w">  </span><span class="kt">real</span><span class="p">(</span><span class="n">dp</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">invcm2Hz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c_light</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e2</span><span class="w"> </span><span class="c">! -- inverse centimeters -&gt; Hz</span>
-<a id="ln-14" name="ln-14" href="#ln-14"></a>
-<a id="ln-15" name="ln-15" href="#ln-15"></a><span class="c">! ================================================================================================================================ !</span>
-<a id="ln-16" name="ln-16" href="#ln-16"></a><span class="k">end module </span><span class="n">CDMSreader__constants</span>
-<a id="ln-17" name="ln-17" href="#ln-17"></a><span class="c">! ================================================================================================================================ !</span>
-</pre></div>
 
-      </section>
+    <p>Check if the state "state" is in the array of states "states"</p>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state"></span>
+              class(<a href='../type/asymtop_state.html'>asymtop_state</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>state</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-states~2"></span>
+              class(<a href='../type/asymtop_state.html'>asymtop_state</a>),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>states</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~4"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    
     </div>
   </div>
 

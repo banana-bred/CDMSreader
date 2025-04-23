@@ -6,11 +6,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Documentation for Fortran Program">
+      <meta name="description" content="Reads molecular transition data taken from the Cologne Database for Molecular Spectroscopy (CDMS) catalogue and determines the lifetimes of various quantum states based on the provided information.">
     <meta name="author" content="" >
     <link rel="icon" href="../favicon.png">
 
-    <title>charQN2int &ndash; Fortran Program</title>
+    <title>All Types &ndash; CDMSreader
+</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -44,7 +45,7 @@
     <div class="container-fluid mb-sm-4 mb-xl-2">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-          <a class="navbar-brand" href="../index.html">Fortran Program </a>
+          <a class="navbar-brand" href="../index.html">CDMSreader </a>
           <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
                   aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon">
@@ -56,7 +57,13 @@
                     <a class="nav-link" href="../lists/files.html">Source Files</a>
                   </li>
                 <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
                   <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
                 </li>
             </ul>
               <div class="d-flex align-items-end flex-grow-1">
@@ -70,149 +77,42 @@
     </div>
 
     <div class="container">
-  <div class="row">
-    <h1>charQN2int
-      <small>Function</small>
-      
-    </h1>
-      <div class="container p-2 mb-4 bg-light border rounded-3">
-    <div class="row align-items-center justify-content-between" id="info-bar">
-      <div class="col">
-        <ul class="list-inline" style="margin-bottom:0px;display:inline">
-
-            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
-              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="100.0% of total for procedures.">8 statements</a>
-            </li>
-
-            <li class="list-inline-item" id="source-file">
-              <i class="fa fa-code"></i>
-              <a href="../src/CDMSreader__readwrite.f"> Source File</a>
-            </li>
-        </ul>
+      <div class="row">
+        <div class="col-lg-12" id='text'>
+			 <h1>Derived Types</h1>
+			 <table class="table table-striped nostretched">
+			 <thead>
+			 <tr><th>Type</th><th>Location</th><th>Extends</th><th>Description</th></tr>
+			 </thead><tbody>
+			   <tr>
+                 <td><a href='../type/asymtop_state.html'>asymtop_state</a></td>
+                 <td><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></td>
+                 <td>None</td>
+                 <td><p>Corresponds to an asymmetric top molecule defined by Q = 23 without the hyperfine splitting,
+essentially averaged over F</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../type/asymtop_state_hfs.html'>asymtop_state_hfs</a></td>
+                 <td><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></td>
+                 <td><a href='../type/asymtop_state.html'>asymtop_state</a></td>
+                 <td><p>Corresponds to an asymmetric top molecule defined by Q = 23 with the hyperfine splitting</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../type/asymtop_state_nohfs.html'>asymtop_state_nohfs</a></td>
+                 <td><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></td>
+                 <td><a href='../type/asymtop_state.html'>asymtop_state</a></td>
+                 <td><p>Already defined by asymtop state !</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../type/asymtop_transition.html'>asymtop_transition</a></td>
+                 <td><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></td>
+                 <td>None</td>
+                 <td><p>Corresponds to a transition</p></td>
+               </tr>
+			 </tbody></table>
+             
+        </div>
       </div>
-      <div class="col">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/cdmsreader__readwrite.f.html'>CDMSreader__readwrite.f</a></li>
-            <li class="breadcrumb-item active" aria-current="page">charQN2int</li>
-          </ol>
-        </nav>
-      </div>
-    </div>
-  </div>
-  <script>
-    // Enable Bootstrap tooltips
-    (function () {
-      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-    })();
-  </script>
-
-  </div>
-  
-  <div class="row">
-    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
-      <div id="sidebar">
-      <h3>Contents</h3>
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
-
-  </div>
-
-    </div>
-    
-    <div class="col-md-9" id='text'>
-    <h2>elemental function charQN2int(QNchar) result(res)  
-</h2>
-        <div class="card mb-4">
-      <h3 class="card-header card-title bg-light">Uses</h3>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <ul class="list-inline">
-                  <li class="list-inline-item">CDMSreader__system</li>
-              </ul>
-            </li>
-        </ul>
-      </div>
-    </div>
-
-
-    <p>Converts the CDMS 2-character representation of integers to actual integers</p>
-
-
-    <h3>Arguments</h3>
-        <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-qnchar"></span>
-              real
-            </td>
-<td></td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>QNchar</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-      <h3>Return Value
-        <small>
-          <span class="anchor" id="variable-res"></span>
-          real
-        </small>
-      </h3>
-      
-    <br>
-
-
-    
-    
-
-    
-    
-
-
-
-    
-    
-    </div>
-  </div>
-
       <hr>
     </div> <!-- /container -->
     <footer>
@@ -220,8 +120,8 @@
         <div class="row justify-content-between">
           <div class="col">
             <p>
-              Fortran Program
-              &copy; 2025 
+              CDMSreader
+              &copy; 2025 gpl3
 </p>
           </div>
           <div class="col">
