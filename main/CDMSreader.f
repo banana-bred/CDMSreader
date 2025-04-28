@@ -93,10 +93,12 @@ program CDMSreader
     ! -- make sure freq is in inverse centimeters. If the uncertainty is < 0, then this is the case. Otherwise,
     !    it's in MHz. Energy seems to always be in inverse centimeters. The Einstein coefficients need to be converted
     !    to 1/s if the frequencies are given in inverse centimeters
-    if( err .lt. 0 ) then
+    if( err .gt. 0 ) then
       err    = -err * 1e6 / invcm2Hz
       freq   = freq * 1e6 / invcm2Hz
+    else
       EinstA = EinstA / (invcm2hz * 1e-6)
+      err = -err
     endif
 
     ! -- determine the uncertainty in A
@@ -118,7 +120,7 @@ program CDMSreader
 
     if(any(Hbits .lt. 0 .OR. Hbits .gt. 1)) call die("Somehow extracted a bit that is neither 0 nor 1")
 
-    if(Q .ne. 23) call die("Q =/= 23 detectd. No other cases have been programmed yet")
+    if(Q .ne. 23) call die("Q =/= 23 detected. No other cases have been programmed yet")
 
     eup = freq + elo
 
