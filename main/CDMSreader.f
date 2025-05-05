@@ -5,7 +5,7 @@ program CDMSreader
   use CDMSreader__types,             only : dp, asymtop_state_hfs, asymtop_transition, add_to &
                                           , sort_last_transition, find_state_number, sort_last_state, asymtop_state_nohfs &
                                           , asymtop_state, make_asymtop_state, sort_states
-  use CDMSreader__readwrite,         only : CDMS_readline, write_states
+  use CDMSreader__readwrite,         only : CDMS_readline, write_states, write_transitions
   use CDMSreader__system,            only : die
   use CDMSreader__constants,         only : invcm2Hz
   use, intrinsic :: iso_fortran_env, only : stdin => input_unit, stdout => output_unit, iostat_end
@@ -70,7 +70,7 @@ program CDMSreader
     !! the number in square brackets in the table
   integer :: H
     !! binary code to indicate which of the last three quantum numbers are half integer quanta (1 indicates that F is half integer)
-    !! The least significant bit of H refers to the F quantum number and is 1 if F is half integer.
+    !! The least significant b it of H refers to the F quantum number and is 1 if F is half integer.
   character(3) :: Hchar
   integer :: Hbits(3)
     !! Binary code representing which of the last three quantum numbesr are integral (0) or half integral (1)
@@ -233,6 +233,8 @@ program CDMSreader
   call write_states(stdout, states_hfs)
   write(stdout, *)
   call write_states(stdout, states_nohfs)
+  write(stdout, *)
+  call write_transitions(stdout, transitions)
 
 ! ================================================================================================================================ !
 end program CDMSreader
