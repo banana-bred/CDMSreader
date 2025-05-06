@@ -7,6 +7,7 @@ module CDMSreader__readwrite
 
   public :: CDMS_readline
   public :: write_states
+  public :: write_transitions
 
 ! ================================================================================================================================ !
 contains
@@ -160,6 +161,104 @@ contains
 end function charQN2int
 
 ! -------------------------------------------------------------------------------------------------------------------------------- !
+subroutine write_transitions(funit, transitions)
+  !! Writes the transitions in a legible format to the designated file unit
+  use CDMSreader__types,     only: dp, asymtop_transition
+  use CDMSreader__system,    only: die
+  use CDMSreader__constants, only: au2ev, au2invcm
+
+  implicit none
+
+  integer, intent(in) :: funit
+    !! The file unit
+  type(asymtop_transition), intent(in) :: transitions(:)
+    !! The array of transitions
+
+  real(dp), parameter :: float_lbound = 1e-2_dp
+  real(dp), parameter :: float_ubound = 9.9e5_dp
+
+  integer :: i, n
+  real(dp) :: E, err, EinstA, lifetime
+  character(6) :: charNup, charKaup, charKcup, charJup, charItotup, charFup
+  character(6) :: charNlo, charKalo, charKclo, charJlo, charItotlo, charFlo
+  character(15) :: charE, charerr, charA, charlifetime
+  character(36) :: header_fmt = '(A, 6(A6, X), 2X, A, 6(A6, X), 4A15)'
+  character(22) :: body_fmt   = '(2X, 6A6, A, 6A6, 4A6)'
+  character(7) :: float_fmt = '(F15.6)'
+  character(7) :: exp_fmt   = '(E15.6)'
+
+  n = size(transitions, 1)
+
+  write(funit, header_fmt) "# "                                        &
+        , "N",       "Ka",        "Kc",      "J",  "Itot",  "F", "<--" &
+        , "N'",      "Ka'",       "Kc'",     "J'", "Itot'", "F'"       &
+        , "E (meV)", "err (meV)", "A (s⁻¹)", "τ (s)"
+
+  do i = 1, n
+
+    write(funit, '(2X)', advance = 'no')
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dN)
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dKa)
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dKc)
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dJ)
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dItot)
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dF)
+    write(funit, '(2X, A)', advance = 'no') "<--"
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dN)
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dKa)
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dKc)
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dJ)
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dItot)
+    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dF)
+    E        = transitions(i) % freq
+    err      = transitions(i) % err
+    EinstA   = transitions(i) % EinstA
+    lifetime = 1/EinstA
+
+    ! -- invcm -> meV
+    E   = E / au2invcm * au2ev * 1000
+    err = E / au2invcm * au2ev * 1000
+
+    ! -- write energy to character
+    if(E .eq. 0 .OR. (E .ge. float_lbound .AND. E .le. float_ubound)) then
+      write(funit, float_fmt, advance = 'no') E
+    else
+      write(funit, exp_fmt, advance = 'no') E
+    endif
+
+    ! -- write error to character
+    if(err .eq. 0 .OR. (err .ge. float_lbound .AND. err .le. float_ubound)) then
+      write(funit, float_fmt, advance = 'no') err
+    else
+      write(funit, exp_fmt, advance = 'no') err
+    endif
+
+    ! -- write Einstein A to character
+    if(EinstA .eq. 0 .OR. (EinstA .ge. float_lbound .AND. EinstA .le. float_ubound)) then
+      write(funit, float_fmt, advance = 'no') EinstA
+    else
+      write(funit, exp_fmt, advance = 'no') EinstA
+    endif
+
+    ! -- write lifetime to character
+    if(lifetime .eq. 0 .OR. (lifetime .ge. float_lbound .AND. lifetime .le. float_ubound)) then
+      write(funit, float_fmt, advance = 'no') lifetime
+    else
+      write(funit, exp_fmt, advance = 'no') lifetime
+    endif
+
+    ! -- newline
+    write(funit, *)
+
+    ! write(funit, body_fmt) &
+    !        charNup, charKaup, charKcup, charJup, charItotup, charFup&
+    !      , charNlo, charKalo, charKclo, charJlo, charItotlo, charFlo&
+    !      , charE,   charerr,  charA,    charlifetime
+  enddo
+
+end subroutine write_transitions
+
+! -------------------------------------------------------------------------------------------------------------------------------- !
 subroutine write_states(funit, states)
   !! Writes the states in a legible format to the designated file unit
   use CDMSreader__types,     only: asymtop_state, asymtop_state_hfs, asymtop_state_nohfs, dp
@@ -178,7 +277,7 @@ subroutine write_states(funit, states)
   real(dp) :: E, EinstA
   real(dp) :: sigmaT
   character(:), allocatable :: charN, charKa, charKc, charJ, charItot, charF
-  character(18) :: header_fmt_hfs     = '(A, 6A6, A15 A15)'
+  character(19) :: header_fmt_hfs     = '(A, 6A6, A15, A15)'
   character(19) :: header_fmt_nohfs   = '(A, 4A6, A15, A15)'
   character(16) :: body_fmt_hfs       = '(2X, 6A6)'
   character(21) :: body_fmt_nohfs     = '(2X, 3A6, I6)'

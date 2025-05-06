@@ -89,7 +89,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="30.5% of total for modules and submodules.">170 statements</a>
+                 title="37.7% of total for modules and submodules.">235 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -142,6 +142,7 @@
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/cdmsreader__readwrite.html#proc-cdms_readline">CDMS_readline</a>
+            <a class="list-group-item" href="../module/cdmsreader__readwrite.html#proc-write_transitions">write_transitions</a>
             <a class="list-group-item" href="../module/cdmsreader__readwrite.html#proc-write_states">write_states</a>
         </div>
       </div>
@@ -211,7 +212,7 @@ the comment character defaults to "#", but can be set to anything not in the cha
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-freq"></span>
+              <span class="anchor" id="variable-freq~2"></span>
               real(kind=dp),
             </td>
 <td>intent(out)</td>
@@ -226,7 +227,7 @@ the comment character defaults to "#", but can be set to anything not in the cha
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-err"></span>
+              <span class="anchor" id="variable-err~2"></span>
               real(kind=dp),
             </td>
 <td>intent(out)</td>
@@ -241,7 +242,7 @@ the comment character defaults to "#", but can be set to anything not in the cha
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-einsta"></span>
+              <span class="anchor" id="variable-einsta~5"></span>
               real(kind=dp),
             </td>
 <td>intent(out)</td>
@@ -418,11 +419,11 @@ Quanta between 100 and 109 are shown as A0 through A9. Similarly, 110 is B0, etc
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-write_states"></span> <h3>public  subroutine <a href='../proc/write_states.html'>write_states</a>(funit, states)  
+    <div class="card-header codesum"><span class="anchor" id="proc-write_transitions"></span> <h3>public  subroutine <a href='../proc/write_transitions.html'>write_transitions</a>(funit, transitions)  
 </h3></div>
     <div class="card-body">
           
-  <p>Writes the states in a legible format to the designated file unit</p>
+  <p>Writes the transitions in a legible format to the designated file unit</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -452,7 +453,62 @@ Quanta between 100 and 109 are shown as A0 through A9. Similarly, 110 is B0, etc
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-states"></span>
+              <span class="anchor" id="variable-transitions~4"></span>
+              type(<a href='../type/asymtop_transition.html'>asymtop_transition</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>transitions</strong>(:)</td>
+            <td>
+<p>The array of transitions</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-write_states"></span> <h3>public  subroutine <a href='../proc/write_states.html'>write_states</a>(funit, states)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Writes the states in a legible format to the designated file unit</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-funit~3"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>funit</strong></td>
+            <td>
+<p>The file unit</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-states~7"></span>
               class(<a href='../type/asymtop_state.html'>asymtop_state</a>),
             </td>
 <td>intent(in)</td>
