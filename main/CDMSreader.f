@@ -50,7 +50,7 @@ program CDMSreader
   logical                   :: skip
   character(:), allocatable :: fmt
 
-  real(dp) :: dF
+  integer :: dF, dFup, dFlo
 
   type(asymtop_state_hfs) :: up_hfs
   type(asymtop_state_hfs) :: lo_hfs
@@ -102,7 +102,7 @@ program CDMSreader
     endif
 
     ! -- determine the uncertainty in A
-    sigmaA2 = (3*err/freq)**2
+    sigmaA2 = (3*EinstA*err/freq)**2
 
     ! -- decrypt the qnfmt message
     Q   = qnfmt / 100
@@ -130,12 +130,14 @@ program CDMSreader
     dNlo    = 2*QN(7)
     dKalo   = 2*QN(8)
     dKclo   = 2*QN(9)
-    dJup    = 2*QN(4)   - Hbits(1)
-    dJlo    = 2*QN(10)  - Hbits(1)
-    dItotup = 2*QN(5)   - Hbits(2)
-    dItotlo = 2*QN(11)  - Hbits(2)
-    degenup = (2*QN(6)  - Hbits(3)) + 1
-    degenlo = (2*QN(12) - Hbits(3)) + 1
+    dJup    = 2*QN(4)  - Hbits(1)
+    dJlo    = 2*QN(10) - Hbits(1)
+    dItotup = 2*QN(5)  - Hbits(2)
+    dItotlo = 2*QN(11) - Hbits(2)
+    dFup    = 2*QN(6)  - Hbits(3)
+    dFlo    = 2*QN(12) - Hbits(3)
+    degenup = 2*dFup + 1
+    degenlo = 2*dFlo + 1
 
     ! -- create the upper and lower state
     up_nohfs = make_asymtop_state( dN = dNup, dKa = dKaup, dKc = dKcup, E = 0.0_dp, EinstA = 0.0_dp, sigmaA2 = 0.0_dp, degen = 0 )
@@ -158,10 +160,10 @@ program CDMSreader
     endif
 
     ! -- create the state with hyperfine splitting
-    up_hfs = make_asymtop_state( up_nohfs % dN, up_nohfs % dKa, up_nohfs % dKc, dJ = dJup, dItot = dItotup, dF = degenup - 1 &
+    up_hfs = make_asymtop_state( up_nohfs % dN, up_nohfs % dKa, up_nohfs % dKc, dJ = dJup, dItot = dItotup, dF = dFup &
                                , E = eup, EinstA = 0.0_dp, sigmaA2 = 0.0_dp &
          )
-    lo_hfs = make_asymtop_state( lo_nohfs % dN, lo_nohfs % dKa, lo_nohfs % dKc, dJ = dJlo, dItot = dItotlo, dF = degenlo - 1 &
+    lo_hfs = make_asymtop_state( lo_nohfs % dN, lo_nohfs % dKa, lo_nohfs % dKc, dJ = dJlo, dItot = dItotlo, dF = dFlo &
                                , E = elo, EinstA = 0.0_dp, sigmaA2 = 0.0_dp &
          )
     transitionul = asymtop_transition( up = up_hfs, lo = lo_hfs, freq = freq, EinstA = EinstA, err = err &
@@ -174,7 +176,7 @@ program CDMSreader
     call find_state_number(lo_hfs, states_hfs, ilo)
     if(ilo .eq. 0) then
       call add_to(lo_hfs, states_hfs)
-      call sort_last_state(states_hfs)
+      call sort_last_state(states_hfs, ilo)
       ! -- new hfs state, add to corresponding non hfs state
       select type(state_nohfs => states_nohfs(ilo_nohfs))
       type is (asymtop_state_nohfs)
@@ -191,8 +193,7 @@ program CDMSreader
     call find_state_number(up_hfs, states_hfs, iup)
     if(iup .eq. 0) then
       call add_to(up_hfs, states_hfs)
-      call sort_last_state(states_hfs)
-      iup = size(states_hfs, 1)
+      call sort_last_state(states_hfs, iup)
       ! -- new hfs state, add to corresponding non hfs state
       select type(state_nohfs => states_nohfs(iup_nohfs))
       type is (asymtop_state_nohfs)

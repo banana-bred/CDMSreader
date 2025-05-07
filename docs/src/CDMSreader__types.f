@@ -345,7 +345,7 @@ contains
   end subroutine sort_last_transition
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  impure subroutine sort_last_state(states)
+  impure subroutine sort_last_state(states, iout)
     !! Sort the last element in the array to where it should go, assuming the rest of the array is sorted
     use CDMSreader__system, only: die
 
@@ -353,6 +353,8 @@ contains
 
     class(asymtop_state), intent(inout), allocatable, target :: states(:)
       !! The array of states
+    integer, intent(out), optional :: iout
+      !! The array to which the last state was sorted
     class(asymtop_state), allocatable :: last
     class(asymtop_state), allocatable :: tmp(:)
     integer :: i, k, n
@@ -370,6 +372,7 @@ contains
 
     case(0)
       ! -- locical mask is all .false. ; last is last
+      if(present(iout)) iout = n
       return
 
     case(1)
@@ -379,6 +382,7 @@ contains
       states(1)   = last
       states(2:n) = tmp(1:n-1)
       deallocate(tmp)
+      if(present(iout)) iout = 1
 
     case default
 
@@ -387,6 +391,7 @@ contains
       states(1:i-1)   = tmp(1:i-1)
       states(i)       = last
       states(i+1:n) = tmp(i:n-1)
+      if(present(iout)) iout = i
       deallocate(tmp)
 
     end select

@@ -216,8 +216,8 @@ subroutine write_transitions(funit, transitions)
     lifetime = 1/EinstA
 
     ! -- invcm -> meV
-    E   = E / au2invcm * au2ev * 1000
-    err = E / au2invcm * au2ev * 1000
+    E   = E   / au2invcm * au2ev * 1000
+    err = err / au2invcm * au2ev * 1000
 
     ! -- write energy to character
     if(E .eq. 0 .OR. (E .ge. float_lbound .AND. E .le. float_ubound)) then
