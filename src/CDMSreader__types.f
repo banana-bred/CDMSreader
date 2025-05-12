@@ -38,8 +38,6 @@ module CDMSreader__types
       !! The state energy
     real(dp) :: EinstA
       !! The total Einstein coefficient from this state
-    real(dp) :: sigmaA2
-      !! Uncertainty in the Einstein A coefficient squared: \(\sigma_A^2\)
   end type asymtop_state
 
   type, extends(asymtop_state) :: asymtop_state_nohfs
@@ -465,7 +463,6 @@ contains
     state1 % dKc    = state2 % dKc
     state1 % E      = state2 % E
     state1 % EinstA = state2 % EinstA
-    state1 % sigmaA2 = state2 % sigmaA2
     select type (s1 => state1)
     ! -- two hfs states
     type is (asymtop_state_hfs)
@@ -489,10 +486,10 @@ contains
   end subroutine state_set_eq
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  pure elemental module function make_asymtop_state_hfs(dN, dKa, dKc, dJ, dItot, dF, E, EinstA, sigmaA2) result(state)
+  pure elemental module function make_asymtop_state_hfs(dN, dKa, dKc, dJ, dItot, dF, E, EinstA) result(state)
     implicit none
     integer,  intent(in) :: dN, dKa, dKc, dJ, dItot, dF
-    real(dp), intent(in) :: E, EinstA, sigmaA2
+    real(dp), intent(in) :: E, EinstA
     type(asymtop_state_hfs) :: state
     state % dN     = dN
     state % dKa    = dKa
@@ -502,22 +499,20 @@ contains
     state % dF     = dF
     state % E      = E
     state % EinstA = EinstA
-    state % sigmaA2 = sigmaA2
   end function make_asymtop_state_hfs
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  pure elemental module function make_asymtop_state_nohfs(dN, dKa, dKc, E, EinstA, degen, sigmaA2) result(state)
+  pure elemental module function make_asymtop_state_nohfs(dN, dKa, dKc, E, EinstA, degen) result(state)
     implicit none
     integer,  intent(in) :: dN, dKa, dKc
     integer,  intent(in), optional :: degen
-    real(dp), intent(in) :: E, EinstA, sigmaA2
+    real(dp), intent(in) :: E, EinstA
     type(asymtop_state_nohfs) :: state
     state % dN     = dN
     state % dKa    = dKa
     state % dKc    = dKc
     state % E      = E
     state % EinstA = EinstA
-    state % sigmaA2 = sigmaA2
     if(.true. .eqv. present(degen)) then
       state % degen = degen
     else

@@ -56,7 +56,8 @@ impure module subroutine CDMS_readline(funit, freq, err, EinstA, dr, elo, gup, t
   character(2) :: qnchar(12)
     !! The quantum numbers as characters (this is what is read from the CDMS file)
 
-  character(53), parameter :: CDMS_fmt = "(F13.6, F11.7, F11.4, I2, F10.4, I3, I7, I4, 12A2, A)" ! Valid for einstein coeffs
+  character(41), parameter :: CDMS_fmt = "(A13, 2A11, I2, A10, I3, I7, I4, 12A2, A)" ! Valid for einstein coeffs
+  ! character(53), parameter :: CDMS_fmt = "(F13.6, F11.7, F11.4, I2, F10.4, I3, I7, I4, 12A2, A)" ! Valid for einstein coeffs
   character(13), parameter :: numeric = "0123456789.+-"
   character(65), parameter :: alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZ&
                                              &abcdefghijklmnopqrstuvwxyz&
@@ -67,6 +68,9 @@ impure module subroutine CDMS_readline(funit, freq, err, EinstA, dr, elo, gup, t
   integer :: alphanumericStart
   integer :: alphanumericEnd
   character(100) :: line
+  character(13) :: freqchar
+  character(11) :: errchar, EinstAchar
+  character(10) :: elochar
 
   skip = .false.
 
@@ -94,7 +98,13 @@ impure module subroutine CDMS_readline(funit, freq, err, EinstA, dr, elo, gup, t
   allocate(character(100) :: mol)
 
   ! -- read into variables
-  read(line, CDMS_fmt) freq, err, EinstA, dr, elo, gup, tag, qnfmt, qnchar(1:12), mol
+  read(line, CDMS_fmt) freqchar, errchar, EinstAchar, dr, elochar, gup, tag, qnfmt, qnchar(1:12), mol
+
+  ! -- char -> real
+  read(freqchar, *)   freq
+  read(EinstAchar, *) EinstA
+  read(errchar, *)    err
+  read(elochar, *)    elo
 
   ! -- convert and trim output
   qn = charQN2int(qnchar)
@@ -274,8 +284,9 @@ subroutine write_states(funit, states)
 
   integer :: n, i
   integer :: degen
-  real(dp) :: E, EinstA
-  real(dp) :: sigmaT
+  real(dp) :: E, EinstA, lifetime
+  real(dp), parameter :: float_lbound = 1e-2_dp
+  real(dp), parameter :: float_ubound = 9.9e5_dp
   character(:), allocatable :: charN, charKa, charKc, charJ, charItot, charF
   character(19) :: header_fmt_hfs     = '(A, 6A6, A15, A15)'
   character(19) :: header_fmt_nohfs   = '(A, 4A6, A15, A15)'
@@ -300,6 +311,7 @@ subroutine write_states(funit, states)
     charKc   = doubleint2char(states(i) % dKc)
     E = states(i) % E
     EinstA = states(i) % EinstA
+    lifetime = 1/EinstA
 
     ! -- invcm -> meV
     E = E / au2invcm * au2ev * 1000
@@ -310,7 +322,7 @@ subroutine write_states(funit, states)
 
       degen = si % degen
       write(funit, body_fmt_nohfs, advance = "no") charN, charKa, charKc, degen
-      if(E.eq.0 .OR. E .ge. 1e-2) then
+      if(E.eq.0 .OR. (E .ge. float_lbound .AND. E .lt. float_ubound)) then
         write(funit, '(F15.6)', advance = "no") E
       else
         write(funit, '(E15.6)', advance = "no") E
@@ -324,7 +336,7 @@ subroutine write_states(funit, states)
       charF    = doubleint2char(si % dF)
       write(funit, body_fmt_hfs, advance = "no") charN, charKa, charKc, charJ, charItot, charF
 
-      if(E.eq.0 .OR. E .ge. 1e-2) then
+      if(E.eq.0 .OR. (E .ge. float_lbound .AND. E .lt. float_ubound)) then
         write(funit, '(F15.6)', advance = "no") E
       else
         write(funit, '(E15.6)', advance = "no") E
@@ -339,9 +351,10 @@ subroutine write_states(funit, states)
     ! -- print the lifetimes with their calculated uncertainties
     if(EinstA .eq. 0) then
       write(funit, '(A15)') "inf"
+    elseif(lifetime .lt. float_lbound .OR. lifetime .ge. float_ubound) then
+      write(funit, '(E15.6)') lifetime
     else
-      sigmaT = sqrt(states(i) % sigmaA2) / EinstA**2
-      write(funit, '(F15.6, " ± ", F0.6)') 1/EinstA, sigmaT
+      write(funit, '(F15.6)') lifetime
     endif
 
   enddo

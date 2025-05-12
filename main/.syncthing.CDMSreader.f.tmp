@@ -31,6 +31,9 @@ program CDMSreader
     !! Estimated or experimental error (999.9999 indicates error is larger)
   real(dp)     :: EinstA
     !! The Einstein A coefficient
+  real(dp)     :: sigmaA2
+    !! The square of the uncertainty in the Einstein A coefficient for a transition, given by the uncertainty in the trantision
+    !! frequency
   real(dp)     :: elo, eup
     !! state energy in cm–1
   integer :: QN(12)
@@ -98,6 +101,9 @@ program CDMSreader
       err = -err
     endif
 
+    ! -- determine the uncertainty in A
+    sigmaA2 = (3*err/freq)**2
+
     ! -- decrypt the qnfmt message
     Q   = qnfmt / 100
     R   = mod(qnfmt, 100)
@@ -132,8 +138,8 @@ program CDMSreader
     degenlo = (2*QN(12) - Hbits(3)) + 1
 
     ! -- create the upper and lower state
-    up_nohfs = make_asymtop_state( dN = dNup, dKa = dKaup, dKc = dKcup, E = 0.0_dp, EinstA = 0.0_dp, degen = 0 )
-    lo_nohfs = make_asymtop_state( dN = dNlo, dKa = dKalo, dKc = dKclo, E = 0.0_dp, EinstA = 0.0_dp, degen = 0 )
+    up_nohfs = make_asymtop_state( dN = dNup, dKa = dKaup, dKc = dKcup, E = 0.0_dp, EinstA = 0.0_dp, sigmaA2 = 0.0_dp, degen = 0 )
+    lo_nohfs = make_asymtop_state( dN = dNlo, dKa = dKalo, dKc = dKclo, E = 0.0_dp, EinstA = 0.0_dp, sigmaA2 = 0.0_dp, degen = 0 )
 
     ! -- add lower non hfs state to states array if it's not already there
     !    and keep track of the lower state's index
@@ -153,10 +159,10 @@ program CDMSreader
 
     ! -- create the state with hyperfine splitting
     up_hfs = make_asymtop_state( up_nohfs % dN, up_nohfs % dKa, up_nohfs % dKc, dJ = dJup, dItot = dItotup, dF = degenup - 1 &
-                               , E = eup, EinstA = 0.0_dp &
+                               , E = eup, EinstA = 0.0_dp, sigmaA2 = 0.0_dp &
          )
     lo_hfs = make_asymtop_state( lo_nohfs % dN, lo_nohfs % dKa, lo_nohfs % dKc, dJ = dJlo, dItot = dItotlo, dF = degenlo - 1 &
-                               , E = elo, EinstA = 0.0_dp &
+                               , E = elo, EinstA = 0.0_dp, sigmaA2 = 0.0_dp &
          )
     transitionul = asymtop_transition( up = up_hfs, lo = lo_hfs, freq = freq, EinstA = EinstA, err = err &
                                      , dr = dr, gup = gup                                                &
@@ -168,7 +174,7 @@ program CDMSreader
     call find_state_number(lo_hfs, states_hfs, ilo)
     if(ilo .eq. 0) then
       call add_to(lo_hfs, states_hfs)
-      call sort_last_state(states_hfs, ilo)
+      call sort_last_state(states_hfs)
       ! -- new hfs state, add to corresponding non hfs state
       select type(state_nohfs => states_nohfs(ilo_nohfs))
       type is (asymtop_state_nohfs)
@@ -185,7 +191,8 @@ program CDMSreader
     call find_state_number(up_hfs, states_hfs, iup)
     if(iup .eq. 0) then
       call add_to(up_hfs, states_hfs)
-      call sort_last_state(states_hfs, iup)
+      call sort_last_state(states_hfs)
+      iup = size(states_hfs, 1)
       ! -- new hfs state, add to corresponding non hfs state
       select type(state_nohfs => states_nohfs(iup_nohfs))
       type is (asymtop_state_nohfs)
@@ -199,7 +206,9 @@ program CDMSreader
     ! -- add the current transition's Einstein coefficient to the higher state's total Einstein coefficient
     !    HFS and non HFS
     states_nohfs(iup_nohfs) % EinstA  = states_nohfs(iup_nohfs) % EinstA  + EinstA * degenup
+    states_nohfs(iup_nohfs) % sigmaA2 = states_nohfs(iup_nohfs) % sigmaA2 + sigmaA2
     states_hfs(iup)         % EinstA  = states_hfs(iup)         % EinstA  + EinstA
+    states_hfs(iup)         % sigmaA2 = states_hfs(iup)         % sigmaA2 + sigmaA2
 
     call add_to(transitionul, transitions) ! -- assumes unique lines and does not check if we already have them in the array
 
