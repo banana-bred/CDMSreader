@@ -9,8 +9,6 @@ module CDMSreader__readwrite
   public :: CDMS_readfile_hfs
   public :: CDMS_readfile_nohfs
 
-  2. check HFS transitions manually with CDMS data to make sure theyre ok
-
 ! ================================================================================================================================ !
 contains
 ! ================================================================================================================================ !
