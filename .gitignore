@@ -1,7 +1,9 @@
 data
-output
+output*
+out
 build
 venv
 cdmsreader
 CDMSreader
 *.dat
+**/*.sync*

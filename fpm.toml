@@ -1,5 +1,5 @@
 name = "CDMSreader"
-version = "0.1.4"
+version = "0.2.0"
 license = "GPL3"
 author = "banana-bred"
 maintainer = "j.forer@posteo.net"
@@ -9,6 +9,9 @@ copyright = "Copyright 2025, banana-bred"
 auto-executables = true
 auto-examples = true
 module-naming = true
+
+[library]
+source-dir = "src"
 
 [install]
 library = false

@@ -12,26 +12,13 @@ module CDMSreader__system
 contains
 ! ================================================================================================================================ !
 
-! -------------------------------------------------------------------------------------------------------------------------------- !
-subroutine die(message)
-  !! Stop program execution with a message
-  use, intrinsic :: iso_fortran_env, only: stderr => error_unit
-  implicit none
-  character(*), intent(in), optional :: message
-  write(stderr,*)
-  write(stderr,'("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")')
-  write(stderr,'("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")')
-  write(stderr,'("@@@@                                                           @@@@")')
-  write(stderr,'("@@@@                          ERROR                            @@@@")')
-  write(stderr,'("@@@@                                                           @@@@")')
-  write(stderr,'("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")')
-  write(stderr,'("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")')
-  write(stderr,*)
-  if(.not.present(message)) error stop
-  write(stderr,'("STOP",X,"::",X,A)') message
-  write(stderr,*)
-  error stop
-end subroutine die
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure elemental subroutine die(message)
+    !! Stop program execution with a message
+    implicit none
+    character(*), intent(in), optional :: message
+    if(.not.present(message)) error stop ; error stop message
+  end subroutine die
 
 ! ================================================================================================================================ !
 end module CDMSreader__system
