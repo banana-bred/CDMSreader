@@ -1,7 +1,7 @@
 Reads molecular transition data from the Cologne Database for Molecular Spectroscopy ([CDMS](https://cdms.astro.uni-koeln.de/)) catalogue
 to determine the radiative lifetimes of the various states involved in the transitions.
 The data must be obtained in the proper format by using the [search and conversion form](https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch).
-The user should ask for A values with the intensities being given as log values.
+**The user should ask for A values with the intensities being given as log values.**
 Units can be requested in GHz (will actually be in MHz) or inverse centimeters.
 
 For now, this only works for one molecule at a time and only for asymmetric top molecules that correspond to the case of Q=23 (see the [CDMS general](https://cdms.astro.uni-koeln.de/classic/general) documentation for more details).
