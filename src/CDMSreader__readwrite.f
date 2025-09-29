@@ -261,7 +261,7 @@ contains
                                  , E = elo, EinstA = 0.0_dp &
            )
       transition_hfs = asymtop_transition_hfs( up = up_hfs, lo = lo_hfs, freq = freq, EinstA = EinstA, err = err &
-                                             , dr = dr, gup = gup                                                &
+                                             , dr = dr, gup = degenup                                                &
            )
 
       if( return_nohfs .eqv. .true. ) then
@@ -271,11 +271,9 @@ contains
                                                    , freq = freq * degenup        &
                                                    , EinstA = EinstA * degenup    &
                                                    , err = (err*degenup)**2       &
-                                                   , dr = dr, gup = gup)
-      endif
-
-      ! -- add a non HFS transition to the array of transitions if requested
-      if( return_nohfs .eqv. .true. ) then
+                                                   , dr = dr, gup = degenup)
+                                                   ! , dr = dr, gup = (dJup+1)*(dItotUp+1))
+        ! -- add a non HFS transition to the array of transitions if requested
         call find_transition_number(transition_nohfs, transitions_nohfs, itran)
         if(itran .eq. 0) then
           call add_to(transition_nohfs, transitions_nohfs)
@@ -362,11 +360,6 @@ contains
         select type(ti => transitions_nohfs(i))
         type is (asymtop_transition_nohfs)
 
-          ! -- divide the accumulated quantities by their summed weights
-          ti % EinstA = ti % EinstA    / ti % gup
-          ti % freq   = ti % freq      / ti % gup
-          ti % err    = sqrt(ti % err) / ti % gup
-
           ! -- update the energy information of the states involved in
           !    the transition so that the transitions can be sorted
           select type(states => states_nohfs)
@@ -376,6 +369,11 @@ contains
             call find_state_number(ti%lo, states_nohfs, ilo)
             ti % up = states(iup)
             ti % lo = states(ilo)
+
+            ! -- divide the accumulated quantities by their summed weights
+            ti % EinstA = ti % EinstA    / ti % up % degen
+            ti % freq   = ti % freq      / ti % up % degen
+            ti % err    = sqrt(ti % err) / ti % up % degen
 
             if(iup .eq. 0 .OR. ilo .eq. 0) then
               call die("Unfound state in the array of states during non-HFS transition finalization !")
