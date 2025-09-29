@@ -410,11 +410,6 @@ contains
     ! -- deallocate arrays that don't need to be returned
     if(return_hfs .eqv. .false.) then
       deallocate(states_hfs)
-      deallocate(transitions_hfs)
-    endif
-    if(return_nohfs .eqv. .false.) then
-      deallocate(states_nohfs)
-      deallocate(transitions_nohfs)
     endif
 
   end subroutine CDMS_readfile
