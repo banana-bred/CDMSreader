@@ -19,13 +19,13 @@ program main
 ! ================================================================================================================================ !
 
   use iso_fortran_env,       only: input_unit, output_unit
-  use CDMSreader__types,     only: asymtop_state, asymtop_transition
+  use CDMSreader__types,     only: asymtop_state_hfs, asymtop_state_nohfs, asymtop_transition_hfs, asymtop_transition_nohfs
   use CDMSreader__readwrite, only: CDMS_readfile
 
-  class(asymtop_state),     allocatable :: states_hfs(:)
-  class(asymtop_state),     allocatable :: states_nohfs(:)
-  class(asymtop_transition), allocatable :: transitions_hfs(:)
-  class(asymtop_transition), allocatable :: transitions_nohfs(:)
+  type(asymtop_state_hfs),        allocatable :: states_hfs(:)
+  type(asymtop_state_nohfs),      allocatable :: states_nohfs(:)
+  type(asymtop_transition_hfs),   allocatable :: transitions_hfs(:)
+  type(asymtop_transition_nohfs), allocatable :: transitions_nohfs(:)
 
 
   call CDMS_readfile( input_unit, output_unit, return_hfs = .true., return_nohfs = .true. &

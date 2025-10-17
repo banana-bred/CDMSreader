@@ -1,3 +1,19 @@
+! CDMSreader: reads transition data from the CDMS and determines the average lifetimes of the involved states
+! Copyright (C) 2025 Josh Forer <j.forer@posteo.net>
+!
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 2 of the License, or
+! (at your option) any later version.
+!
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License along
+! with this program; if not, write to the Free Software Foundation, Inc.,
+! 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ! ================================================================================================================================ !
 module CDMSreader__readwrite
 
@@ -5,13 +21,377 @@ module CDMSreader__readwrite
 
   private
 
-  public :: CDMS_readline
-  public :: write_states
-  public :: write_transitions
+  public :: CDMS_readfile
+  public :: CDMS_readfile_hfs
+  public :: CDMS_readfile_nohfs
 
 ! ================================================================================================================================ !
 contains
 ! ================================================================================================================================ !
+
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  impure module subroutine CDMS_readfile_hfs(funit_in, funit_out, states_hfs, transitions_hfs)
+    !! Read a file containing transitions from the CDMS, get ony states and transitions with hyperfine resolution.
+    !! Wrapper for CDMS_readfile.
+    use CDMSreader__types, only: asymtop_state_hfs, asymtop_state_nohfs, asymtop_transition_hfs, asymtop_transition_nohfs
+    implicit none
+    integer, intent(in) :: funit_in
+      !! File unit for the CDMS data
+    integer, intent(in) :: funit_out
+      !! File unti for the processed data. If funit is 0, do not write output
+    type(asymtop_state_hfs),     intent(inout), allocatable :: states_hfs(:)
+      !! Array of states with hyperfine resolution
+    type(asymtop_transition_hfs), intent(inout), allocatable :: transitions_hfs(:)
+      !! Array of transitions with hyperfine resolution
+
+    type(asymtop_state_nohfs),     allocatable :: states_nohfs(:)
+      !! Dummy array of states statistically averaged over hyperfine levels
+    type(asymtop_transition_nohfs), allocatable :: transitions_nohfs(:)
+      !! Dummy array of transitions avveraged over hyperfine levels
+
+    call CDMS_readfile(funit_in, funit_out, .true., .false., states_hfs, states_nohfs, transitions_hfs, transitions_nohfs)
+
+  end subroutine CDMS_readfile_hfs
+
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  impure module subroutine CDMS_readfile_nohfs(funit_in, funit_out, states_nohfs, transitions_nohfs)
+    !! Read a file containing transitions from the CDMS, get ony states and transitions without hyperfine resolution.
+    !! Wrapper for CDMS_readfile.
+    use CDMSreader__types, only: asymtop_state_hfs, asymtop_state_nohfs, asymtop_transition_hfs, asymtop_transition_nohfs
+    implicit none
+    integer, intent(in) :: funit_in
+      !! File unit for the CDMS data
+    integer, intent(in) :: funit_out
+      !! File unti for the processed data. If funit is 0, do not write output
+    type(asymtop_state_nohfs),     intent(inout), allocatable :: states_nohfs(:)
+      !! Array of states statistically averaged over hyperfine levels
+    type(asymtop_transition_nohfs), intent(inout), allocatable :: transitions_nohfs(:)
+      !! Array of transitions avveraged over hyperfine levels
+
+    type(asymtop_state_hfs),  allocatable :: states_hfs(:)
+      !! Dummy array of states with hyperfine resolution
+    type(asymtop_transition_hfs), allocatable :: transitions_hfs(:)
+      !! Dummy array of transitions with hyperfine resolution
+
+    call CDMS_readfile(funit_in, funit_out, .false., .true., states_hfs, states_nohfs, transitions_hfs, transitions_nohfs)
+
+  end subroutine CDMS_readfile_nohfs
+
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  impure module subroutine CDMS_readfile( funit_in, funit_out, return_hfs, return_nohfs &
+                                        , states_hfs, states_nohfs, transitions_hfs, transitions_nohfs)
+    !! Read a file containing transitions from the CDMS
+
+    use CDMSreader__types,             only : dp, asymtop_state_hfs, asymtop_transition, add_to &
+                                            , sort_last_transition, find_state_number, sort_last_state, asymtop_state_nohfs &
+                                            , asymtop_state, make_asymtop_state, sort_states &
+                                            , asymtop_transition, asymtop_transition_nohfs, asymtop_transition_hfs &
+                                            , find_transition_number, sort_transitions
+    use CDMSreader__system,            only : die
+    use CDMSreader__constants,         only : invcm2Hz
+    use, intrinsic :: iso_fortran_env, only : iostat_end
+
+    implicit none
+
+    integer, intent(in) :: funit_in
+      !! File unit for the CDMS data. Must refer to a stream, like stdin or an opened file
+    integer, intent(in) :: funit_out
+      !! File unti for the processed data. If funit is 0, do not write output. Must refer to
+      !! a stream, like stdout or an opened file
+    logical, intent(in) :: return_hfs
+      !! Return states and transition arrays for hyperfine data ?
+    logical, intent(in) :: return_nohfs
+      !! Return states and transition arrays for non-hyperfine data ?
+    type(asymtop_state_hfs),     intent(inout), allocatable :: states_hfs(:)
+      !! Array of states with hyperfine resolution
+    type(asymtop_state_nohfs),     intent(inout), allocatable :: states_nohfs(:)
+      !! Array of states statistically averaged over hyperfine levels
+    type(asymtop_transition_hfs), intent(inout), allocatable :: transitions_hfs(:)
+      !! Array of transitions with hyperfine resolution
+    type(asymtop_transition_nohfs), intent(inout), allocatable :: transitions_nohfs(:)
+      !! Array of transitions avveraged over hyperfine levels
+
+    ! -- data in the cat file
+    integer      :: DR
+      !! Degrees of freedom in the rotational partition function (0 for atoms, 2 for linear molecules, and 3 for nonlinear molecules)
+    integer      :: GUP
+      !! Upper state degeneracy, gup = gI * gF, where gF = 2F+1
+    integer      :: TAG
+      !! Species tag or molecular identifier. A negative value flags that the line frequency has been measured in the laboratory.
+      !! The absolute value of TAG is then the species tag (as given in line 2 of file.int above) and ERR is the reported experimental
+      !! error.
+    integer :: qnfmt
+      !! Identifies the format of the quantum numbers given in the field QN.
+    real(dp)     :: freq
+      !! Frequency of the transition
+    real(dp)     :: EinsteinA
+      !! The Einstein A coefficient for a transition
+    real(dp)     :: err
+      !! Estimated or experimental error (999.9999 indicates error is larger)
+    real(dp)     :: EinstA
+      !! The Einstein A coefficient
+    real(dp)     :: elo, eup
+      !! state energy in cm–1
+    integer :: QN(12)
+      !! Twice the quantum numbers numbers. These are integers but are converted in the reading routine from their coding format
+      !! according to QNFMT. Upper state quanta start in character 1. Lower state quanta start in character 14 (element 7).
+      !! Unused quanta are blank, quanta whose magnitude is larger than 99 or smaller than –9 are shown with alphabetic characters
+      !! or **. Quanta between –10 and –19 are shown as a0 through a9. Similarly, –20 is b0, etc., up to –259, which is shown as z9.
+      !! Quanta between 100 and 109 are shown as A0 through A9. Similarly, 110 is B0, etc., up to 359, which is shown as Z9.
+    character(:), allocatable :: mol
+
+    integer :: degenup, degenlo, dNup, dNlo, dKaup, dKalo, dKcup, dKclo, dJup, dJlo, dItotup, dItotlo
+
+    integer                   :: io
+    logical                   :: skip
+    character(:), allocatable :: fmt
+
+    real(dp) :: dF
+
+    type(asymtop_state_hfs) :: up_hfs
+    type(asymtop_state_hfs) :: lo_hfs
+    ! type(asymtop_state_hfs),  allocatable :: states_hfs(:)
+
+    type(asymtop_state_nohfs) :: up_nohfs
+    type(asymtop_state_nohfs) :: lo_nohfs
+    ! type(asymtop_state_nohfs),  allocatable :: states_nohfs(:)
+
+    type(asymtop_transition_hfs)   :: transition_hfs
+    type(asymtop_transition_nohfs) :: transition_nohfs
+
+    integer :: i
+    integer :: Q
+      !! the number in square brackets in the table
+    integer :: H
+      !! binary code to indicate which of the last three quantum numbers are half integer quanta (1 indicates that F is half integer)
+      !! The least significant b it of H refers to the F quantum number and is 1 if F is half integer.
+    character(3) :: Hchar
+    integer :: Hbits(3)
+      !! Binary code representing which of the last three quantum numbesr are integral (0) or half integral (1)
+    integer :: NQN
+      !! number of quanta per state
+    integer :: R
+
+    integer :: iup, ilo, iup_nohfs, ilo_nohfs
+    integer :: itran
+
+    lines: do
+
+      call CDMS_readline(funit_in, freq, err, EinstA, dr, elo, gup, tag, qnfmt, QN(1:12), mol, io, skip, "#")
+
+      if(io   .eq.  iostat_end) exit
+      if(skip .eqv. .true.)     cycle
+
+      ! -- we actually read log10(A)
+      EinstA = 10**EinstA
+
+      ! -- make sure freq is in inverse centimeters. If the uncertainty is < 0, then this is the case. Otherwise,
+      !    it's in MHz. Energy seems to always be in inverse centimeters. The Einstein coefficients need to be converted
+      !    to 1/s if the frequencies are given in inverse centimeters
+      if( err .gt. 0 ) then
+        err    = -err * 1e6 / invcm2Hz
+        freq   = freq * 1e6 / invcm2Hz
+      else
+        EinstA = EinstA / (invcm2hz * 1e-6)
+        err = -err
+      endif
+
+      ! -- decrypt the qnfmt message
+      Q   = qnfmt / 100
+      R   = mod(qnfmt, 100)
+      H   = R / 10
+      NQN = mod(R, 10)
+
+      if(Q*100 + H*10 + NQN .ne. qnfmt) call die("Problem reading qnfmt")
+
+      ! -- decrypt H
+      write(Hchar, "(b3.3)") H
+      read(Hchar, *) H
+      R = mod(H, 10)
+      Hbits = [H/100, R/10, mod(R, 10)]
+
+      if(any(Hbits .lt. 0 .OR. Hbits .gt. 1)) call die("Somehow extracted a bit that is neither 0 nor 1")
+
+      if(Q .ne. 23) call die("Q =/= 23 detected. No other cases have been programmed yet")
+
+      eup = freq + elo
+
+      dNup    = 2*QN(1)
+      dKaup   = 2*QN(2)
+      dKcup   = 2*QN(3)
+      dNlo    = 2*QN(7)
+      dKalo   = 2*QN(8)
+      dKclo   = 2*QN(9)
+      dJup    = 2*QN(4)   - Hbits(1)
+      dJlo    = 2*QN(10)  - Hbits(1)
+      dItotup = 2*QN(5)   - Hbits(2)
+      dItotlo = 2*QN(11)  - Hbits(2)
+      degenup = (2*QN(6)  - Hbits(3)) + 1
+      degenlo = (2*QN(12) - Hbits(3)) + 1
+
+      ! -- create the upper and lower state
+      up_nohfs = make_asymtop_state( dN = dNup, dKa = dKaup, dKc = dKcup, E = 0.0_dp, EinstA = 0.0_dp, degen = 0 )
+      lo_nohfs = make_asymtop_state( dN = dNlo, dKa = dKalo, dKc = dKclo, E = 0.0_dp, EinstA = 0.0_dp, degen = 0 )
+
+      ! -- add non HFS states to array if desired
+      if(return_nohfs .eqv. .true.) then
+
+        ! -- add lower non hfs state to states array if it's not already there
+        !    and keep track of the lower state's index
+        call find_state_number(lo_nohfs, states_nohfs, ilo_nohfs)
+        if(ilo_nohfs .eq. 0) then
+          call add_to(lo_nohfs, states_nohfs)
+          ilo_nohfs = size(states_nohfs, 1)
+        endif
+
+        ! -- add upper non hfs state to states array if it's not already there
+        !    and keep track of the upper state's index
+        call find_state_number(up_nohfs, states_nohfs, iup_nohfs)
+        if(iup_nohfs .eq. 0) then
+          call add_to(up_nohfs, states_nohfs)
+          iup_nohfs = size(states_nohfs, 1)
+        endif
+      endif
+
+      ! -- create the state with hyperfine splitting
+      up_hfs = make_asymtop_state( up_nohfs % dN, up_nohfs % dKa, up_nohfs % dKc, dJ = dJup, dItot = dItotup, dF = degenup - 1 &
+                                 , E = eup, EinstA = 0.0_dp &
+           )
+      lo_hfs = make_asymtop_state( lo_nohfs % dN, lo_nohfs % dKa, lo_nohfs % dKc, dJ = dJlo, dItot = dItotlo, dF = degenlo - 1 &
+                                 , E = elo, EinstA = 0.0_dp &
+           )
+      transition_hfs = asymtop_transition_hfs( up = up_hfs, lo = lo_hfs, freq = freq, EinstA = EinstA, err = err &
+                                             , dr = dr, gup = degenup                                                &
+           )
+
+      if( return_nohfs .eqv. .true. ) then
+        ! -- creat non HFS transition (with appropriate weighting so that we can
+        !    properly finalize these
+        transition_nohfs = asymtop_transition_nohfs( up = up_nohfs, lo = lo_nohfs &
+                                                   , freq = freq * degenup        &
+                                                   , EinstA = EinstA * degenup    &
+                                                   , err = (err*degenup)**2       &
+                                                   , dr = dr, gup = degenup)
+                                                   ! , dr = dr, gup = (dJup+1)*(dItotUp+1))
+        ! -- add a non HFS transition to the array of transitions if requested
+        call find_transition_number(transition_nohfs, transitions_nohfs, itran)
+        if(itran .eq. 0) then
+          call add_to(transition_nohfs, transitions_nohfs)
+        else
+          ! -- if this transition already exists, accumulate values for averaging later
+          associate(t => transition_nohfs, ti => transitions_nohfs(itran))
+            ti % gup    = ti % gup    + t % gup
+            ti % freq   = ti % freq   + t % freq
+            ti % EinstA = ti % EinstA + t % EinstA
+            ti % err    = ti % err    + t % err
+          end associate
+        endif
+      endif
+
+      ! -- add lower hfs state to states array if it's not already there
+      !    and keep track of the lower state's index. A new hfs state means
+      !    that we have to add its energy and degeneracy to the non hfs state
+      call find_state_number(lo_hfs, states_hfs, ilo)
+      if(ilo .eq. 0) then
+        call add_to(lo_hfs, states_hfs)
+        call sort_last_state(states_hfs, ilo)
+        ! -- new hfs state, add to corresponding non hfs state
+        if(return_nohfs .eqv. .true.) then
+        associate(state_nohfs => states_nohfs(ilo_nohfs))
+          state_nohfs % E     = state_nohfs % E     + Elo * degenlo
+          state_nohfs % degen = state_nohfs % degen + degenlo
+        end associate
+        endif
+      endif
+
+      ! -- add upper hfs state to states array if it's not already there
+      !    and keep track of the upper state's index. A new hfs state means
+      !    that we have to add its energy and degeneracy to the non hfs state
+      call find_state_number(up_hfs, states_hfs, iup)
+      if(iup .eq. 0) then
+        call add_to(up_hfs, states_hfs)
+        call sort_last_state(states_hfs, iup)
+        ! -- new hfs state, add to corresponding non hfs state
+        if(return_nohfs .eqv. .true.) then
+        associate(state_nohfs => states_nohfs(iup_nohfs))
+          state_nohfs % E      = state_nohfs % E      + Eup    * degenup
+          state_nohfs % degen  = state_nohfs % degen  + degenup
+        end associate
+        endif
+      endif
+
+      ! -- add the current transition's Einstein coefficient to the higher state's total Einstein coefficient
+      !    HFS and non HFS
+      if(return_nohfs .eqv. .true.) states_nohfs(iup_nohfs) % EinstA  = states_nohfs(iup_nohfs) % EinstA  + EinstA * degenup
+      states_hfs(iup) % EinstA  = states_hfs(iup)         % EinstA  + EinstA
+
+      if(return_hfs .eqv. .true.) then
+        call add_to(transition_hfs, transitions_hfs) ! -- assumes unique lines and does not check if we already have them in the array
+        call sort_last_transition(transitions_hfs)
+      endif
+
+    enddo lines
+
+    write_nohfs: if(return_nohfs .eqv. .true.) then
+
+      ! -- finalize the non hfs states
+      finalize_states_nohfs: do i = 1, size(states_nohfs, 1)
+      associate(state_nohfs => states_nohfs(i))
+        state_nohfs % E      = state_nohfs % E      / state_nohfs % degen
+        state_nohfs % EinstA = state_nohfs % EinstA / state_nohfs % degen
+      end associate
+      enddo finalize_states_nohfs
+
+      ! -- sort these now that their energies are finalized
+      call sort_states(states_nohfs)
+
+      ! -- finalize the non hfs transitions
+      finalize_transitions_nohfs: do i = 1, size(transitions_nohfs, 1)
+
+        associate(ti => transitions_nohfs(i), states => states_nohfs)
+        ! type is (asymtop_transition_nohfs)
+
+          ! -- update the energy information of the states involved in
+          !    the transition so that the transitions can be sorted
+          ! select type(states => states_nohfs)
+          ! type is (asymtop_state_nohfs)
+
+          call find_state_number(ti%up, states_nohfs, iup)
+          call find_state_number(ti%lo, states_nohfs, ilo)
+          ti % up = states(iup)
+          ti % lo = states(ilo)
+
+          ! -- divide the accumulated quantities by their summed weights
+          ti % EinstA = ti % EinstA    / ti % up % degen
+          ti % freq   = ti % freq      / ti % up % degen
+          ti % err    = sqrt(ti % err) / ti % up % degen
+
+          if(iup .eq. 0 .OR. ilo .eq. 0) then
+            call die("Unfound state in the array of states during non-HFS transition finalization !")
+          endif
+
+        end associate
+
+      enddo finalize_transitions_nohfs
+
+      ! -- sort these now that their energies are finalized
+      call sort_transitions(transitions_nohfs)
+
+      call write_states(funit_out, states_nohfs)
+
+    endif write_nohfs
+
+    ! call sort_transitions(transitions_hfs)
+    if(return_hfs   .eqv. .true.) call write_states(funit_out,      states_hfs)
+    if(return_nohfs .eqv. .true.) call write_transitions(funit_out, transitions_nohfs)
+    if(return_hfs   .eqv. .true.) call write_transitions(funit_out, transitions_hfs)
+
+    ! -- deallocate arrays that don't need to be returned
+    if(return_hfs .eqv. .false.) then
+      deallocate(states_hfs)
+    endif
+
+  end subroutine CDMS_readfile
 
 ! ---------------------------------------------------------------------------------------------------------------------------------!
 impure module subroutine CDMS_readline(funit, freq, err, EinstA, dr, elo, gup, tag, qnfmt, QN, mol, io, skip, comment_char_in)
@@ -173,7 +553,7 @@ end function charQN2int
 ! -------------------------------------------------------------------------------------------------------------------------------- !
 subroutine write_transitions(funit, transitions)
   !! Writes the transitions in a legible format to the designated file unit
-  use CDMSreader__types,     only: dp, asymtop_transition
+  use CDMSreader__types,     only: dp, asymtop_transition, asymtop_transition_hfs, asymtop_transition_nohfs
   use CDMSreader__system,    only: die
   use CDMSreader__constants, only: au2ev, au2invcm
 
@@ -181,7 +561,7 @@ subroutine write_transitions(funit, transitions)
 
   integer, intent(in) :: funit
     !! The file unit
-  type(asymtop_transition), intent(in) :: transitions(:)
+  class(asymtop_transition), intent(in) :: transitions(:)
     !! The array of transitions
 
   real(dp), parameter :: float_lbound = 1e-2_dp
@@ -192,34 +572,65 @@ subroutine write_transitions(funit, transitions)
   character(6) :: charNup, charKaup, charKcup, charJup, charItotup, charFup
   character(6) :: charNlo, charKalo, charKclo, charJlo, charItotlo, charFlo
   character(15) :: charE, charerr, charA, charlifetime
-  character(36) :: header_fmt = '(A, 6(A6, X), 2X, A, 6(A6, X), 4A15)'
-  character(22) :: body_fmt   = '(2X, 6A6, A, 6A6, 4A6)'
+  character(36) :: header_fmt_hfs   = '(A, 6(A6, X), 2X, A, 6(A6, X), 4A15)'
+  character(36) :: header_fmt_nohfs = '(A, 3(A6, X), 2X, A, 3(A6, X), 4A15)'
+  character(22) :: body_fmt_hfs     = '(2X, 6A6, A, 6A6, 4A6)'
+  character(22) :: body_fmt_nohfs   = '(2X, 3A6, A, 3A6, 4A6)'
   character(7) :: float_fmt = '(F15.6)'
   character(7) :: exp_fmt   = '(E15.6)'
 
+  if(funit .eq. 0) return
+
+  ! -- initial space
+  write(funit, *)
+
   n = size(transitions, 1)
 
-  write(funit, header_fmt) "# "                                        &
-        , "N",       "Ka",        "Kc",      "J",  "Itot",  "F", "<--" &
-        , "N'",      "Ka'",       "Kc'",     "J'", "Itot'", "F'"       &
-        , "E (meV)", "err (meV)", "A (s⁻¹)", "τ (s)"
+  ! -- change header based on first element, assume all transitions are of same type
+  select type(t => transitions(1))
+  type is (asymtop_transition_hfs)
+    write(funit, header_fmt_hfs) "# "                                    &
+          , "N",       "Ka",        "Kc",      "J",  "Itot",  "F", "<--" &
+          , "N'",      "Ka'",       "Kc'",     "J'", "Itot'", "F'"       &
+          , "E (meV)", "err (meV)", "A (s⁻¹)", "τ (s)"
+  type is (asymtop_transition_nohfs)
+    write(funit, header_fmt_nohfs) "# "         &
+          , "N",       "Ka",        "Kc", "<--" &
+          , "N'",      "Ka'",       "Kc'"       &
+          , "E (meV)", "err (meV)", "A (s⁻¹)", "τ (s)"
+  class default
+    call die("Unidentified type for the first element of the transitions array")
+  end select
 
   do i = 1, n
 
-    write(funit, '(2X)', advance = 'no')
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dN)
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dKa)
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dKc)
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dJ)
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dItot)
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % lo % dF)
-    write(funit, '(2X, A)', advance = 'no') "<--"
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dN)
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dKa)
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dKc)
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dJ)
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dItot)
-    write(funit, '(A6, X)', advance = 'no') doubleint2char(transitions(i) % up % dF)
+    select type(t => transitions(i))
+    type is (asymtop_transition_hfs)
+      write(funit, '(2X)', advance = 'no')
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % lo % dN)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % lo % dKa)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % lo % dKc)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % lo % dJ)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % lo % dItot)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % lo % dF)
+      write(funit, '(2X, A)', advance = 'no') "<--"
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % up % dN)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % up % dKa)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % up % dKc)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % up % dJ)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % up % dItot)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % up % dF)
+    type is (asymtop_transition_nohfs)
+      write(funit, '(2X)', advance = 'no')
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % lo % dN)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % lo % dKa)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % lo % dKc)
+      write(funit, '(2X, A)', advance = 'no') "<--"
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % up % dN)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % up % dKa)
+      write(funit, '(A6, X)', advance = 'no') doubleint2char(t % up % dKc)
+    end select
+
     E        = transitions(i) % freq
     err      = transitions(i) % err
     EinstA   = transitions(i) % EinstA
@@ -252,18 +663,11 @@ subroutine write_transitions(funit, transitions)
 
     ! -- write lifetime to character
     if(lifetime .eq. 0 .OR. (lifetime .ge. float_lbound .AND. lifetime .le. float_ubound)) then
-      write(funit, float_fmt, advance = 'no') lifetime
+      write(funit, float_fmt) lifetime
     else
-      write(funit, exp_fmt, advance = 'no') lifetime
+      write(funit, exp_fmt) lifetime
     endif
 
-    ! -- newline
-    write(funit, *)
-
-    ! write(funit, body_fmt) &
-    !        charNup, charKaup, charKcup, charJup, charItotup, charFup&
-    !      , charNlo, charKalo, charKclo, charJlo, charItotlo, charFlo&
-    !      , charE,   charerr,  charA,    charlifetime
   enddo
 
 end subroutine write_transitions
@@ -293,7 +697,12 @@ subroutine write_states(funit, states)
   character(16) :: body_fmt_hfs       = '(2X, 6A6)'
   character(21) :: body_fmt_nohfs     = '(2X, 3A6, I6)'
 
+  if(funit .eq. 0) return
+
   n = size(states, 1)
+
+  ! -- initial empty line
+  write(funit, *)
 
   ! -- choose appropriate header
   select type (s1 => states(1))

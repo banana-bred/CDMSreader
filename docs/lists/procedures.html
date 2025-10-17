@@ -90,11 +90,24 @@
                  <td></td>
                </tr>
 			   <tr>
-                 <td><a href='../proc/cdms_readline.html'>CDMS_readline</a></td>
+                 <td><a href='../proc/cdms_readfile.html'>CDMS_readfile</a></td>
                  <td><a href='../module/cdmsreader__readwrite.html'>CDMSreader__readwrite</a></td>
                  <td>Subroutine</td>
-                 <td><p>Read "cat" file from the CDMS contents into appropriate arrays, with the capability to skip lines that are well-commented or blank
-the comment character defaults to "#", but can be set to anything not in the character NUMERIC also not whitespace</p></td>
+                 <td><p>Read a file containing transitions from the CDMS</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/cdms_readfile_hfs.html'>CDMS_readfile_hfs</a></td>
+                 <td><a href='../module/cdmsreader__readwrite.html'>CDMSreader__readwrite</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Read a file containing transitions from the CDMS, get ony states and transitions with hyperfine resolution.
+Wrapper for CDMS_readfile.</p></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/cdms_readfile_nohfs.html'>CDMS_readfile_nohfs</a></td>
+                 <td><a href='../module/cdmsreader__readwrite.html'>CDMSreader__readwrite</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Read a file containing transitions from the CDMS, get ony states and transitions without hyperfine resolution.
+Wrapper for CDMS_readfile.</p></td>
                </tr>
 			   <tr>
                  <td><a href='../proc/die.html'>die</a></td>
@@ -103,10 +116,16 @@ the comment character defaults to "#", but can be set to anything not in the cha
                  <td><p>Stop program execution with a message</p></td>
                </tr>
 			   <tr>
-                 <td><a href='../proc/find_state_number.html'>find_state_number</a></td>
+                 <td><a href='../interface/find_state_number.html'>find_state_number</a></td>
                  <td><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Check if the state "state" is in the array of states "states"</p></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/find_transition_number.html'>find_transition_number</a></td>
+                 <td><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></td>
+                 <td>Interface</td>
+                 <td></td>
                </tr>
 			   <tr>
                  <td><a href='../interface/make_asymtop_state.html'>make_asymtop_state</a></td>
@@ -121,10 +140,10 @@ the comment character defaults to "#", but can be set to anything not in the cha
                  <td><p>Sort the last element in the array to where it should go, assuming the rest of the array is sorted</p></td>
                </tr>
 			   <tr>
-                 <td><a href='../proc/sort_last_transition.html'>sort_last_transition</a></td>
+                 <td><a href='../interface/sort_last_transition.html'>sort_last_transition</a></td>
                  <td><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Sort the last element in the array to where it should go, assuming the rest of the array is sorted</p></td>
+                 <td>Interface</td>
+                 <td></td>
                </tr>
 			   <tr>
                  <td><a href='../proc/sort_states.html'>sort_states</a></td>
@@ -133,16 +152,10 @@ the comment character defaults to "#", but can be set to anything not in the cha
                  <td><p>Insertion sort the array states, without assuming that it is sorted</p></td>
                </tr>
 			   <tr>
-                 <td><a href='../proc/write_states.html'>write_states</a></td>
-                 <td><a href='../module/cdmsreader__readwrite.html'>CDMSreader__readwrite</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Writes the states in a legible format to the designated file unit</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='../proc/write_transitions.html'>write_transitions</a></td>
-                 <td><a href='../module/cdmsreader__readwrite.html'>CDMSreader__readwrite</a></td>
-                 <td>Subroutine</td>
-                 <td><p>Writes the transitions in a legible format to the designated file unit</p></td>
+                 <td><a href='../interface/sort_transitions.html'>sort_transitions</a></td>
+                 <td><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></td>
+                 <td>Interface</td>
+                 <td></td>
                </tr>
 			 </tbody></table>
              

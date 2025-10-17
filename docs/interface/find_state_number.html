@@ -10,7 +10,7 @@
     <meta name="author" content="" >
     <link rel="icon" href="../favicon.png">
 
-    <title>sort_last_state &ndash; CDMSreader</title>
+    <title>find_state_number &ndash; CDMSreader</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -77,8 +77,8 @@
 
     <div class="container">
   <div class="row">
-    <h1>sort_last_state
-      <small>Subroutine</small>
+    <h1>find_state_number
+      <small>Interface</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -89,7 +89,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="11.5% of total for procedures.">33 statements</a>
+                 title="<p> 1.4% of total for procedures.</p>Including implementation: 32 statements, 11.2% of total for procedures.">4 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -103,7 +103,7 @@
           <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../sourcefile/cdmsreader__types.f.html'>CDMSreader__types.f</a></li>
                 <li class="breadcrumb-item"><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></li>
-            <li class="breadcrumb-item active" aria-current="page">sort_last_state</li>
+            <li class="breadcrumb-item active" aria-current="page">find_state_number</li>
           </ol>
         </nav>
       </div>
@@ -118,10 +118,10 @@
   </script>
 
   </div>
-  
+
   <div class="row">
     <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
-      <div id="sidebar">
+        <div id="sidebar">
       <h3>Contents</h3>
   
   
@@ -141,36 +141,41 @@
   
   
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#modprocs-0"
+         aria-expanded="false" aria-controls="modprocs-0">
+         <h4 class="card-header bg-primary text-white">Module Procedures</h4>
+      </a>
+      <div id="modprocs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../interface/find_state_number.html#moduleprocedure-find_state_number_nohfs">find_state_number_nohfs</a>
+            <a class="list-group-item" href="../interface/find_state_number.html#moduleprocedure-find_state_number_hfs">find_state_number_hfs</a>
+        </div>
+      </div>
+    </div>
+
   
 
 
   </div>
 
     </div>
-    
+
     <div class="col-md-9" id='text'>
-    <h2>public pure subroutine sort_last_state(states, iout)  
-</h2>
-        <div class="card mb-4">
-      <h3 class="card-header card-title bg-light">Uses</h3>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <ul class="list-inline">
-                  <li class="list-inline-item"><a href='../module/cdmsreader__system.html'>CDMSreader__system</a></li>
-              </ul>
-            </li>
-        </ul>
-      </div>
-    </div>
+      <h2>public interface find_state_number</h2>
+      
 
 
-    <p>Sort the last element in the array to where it should go, assuming the rest of the array is sorted</p>
 
+        <h2>Module Procedures</h2>
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-find_state_number_nohfs"></span> <h3>private pure subroutine find_state_number_nohfs(state, states, i)  
+</h3></div>
+    <div class="card-body">
+        <p>Check if the state "state" is in the array of states "states"</p>
 
-    <h3>Arguments</h3>
-        <table class="table table-striped varlist">
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
     <thead>
       <tr>
         <th scope="col">Type</th>
@@ -182,53 +187,127 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-states~6"></span>
-              class(<a href='../type/asymtop_state.html'>asymtop_state</a>),
+              <span class="anchor" id="variable-state"></span>
+              type(<a href='../type/asymtop_state_nohfs.html'>asymtop_state_nohfs</a>),
             </td>
-<td>intent(inout)</td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>states</strong>(:)</td>
+            <td><strong>state</strong></td>
             <td>
-                <p>The array of states</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iout~3"></span>
+              <span class="anchor" id="variable-states"></span>
+              type(<a href='../type/asymtop_state_nohfs.html'>asymtop_state_nohfs</a>),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>states</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i"></span>
               integer,
             </td>
-<td>intent(out),</td>
-              <td>optional</td>            <td>
+<td>intent(out)</td>
+              <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>iout</strong></td>
+            <td><strong>i</strong></td>
             <td>
-                <p>The array to which the last state was sorted</p>
+                
             </td>
         </tr>
     </tbody>
   </table>
 
-    <br>
 
-
-    
-    
-
-    
-    
-
-
-
-    
-    
     </div>
   </div>
 
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-find_state_number_hfs"></span> <h3>private pure subroutine find_state_number_hfs(state, states, i)  
+</h3></div>
+    <div class="card-body">
+        <p>Check if the state "state" is in the array of states "states"</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state~2"></span>
+              type(<a href='../type/asymtop_state_hfs.html'>asymtop_state_hfs</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>state</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-states~2"></span>
+              type(<a href='../type/asymtop_state_hfs.html'>asymtop_state_hfs</a>),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>states</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~2"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+</div>
+  </div>
       <hr>
     </div> <!-- /container -->
     <footer>

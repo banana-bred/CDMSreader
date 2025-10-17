@@ -10,7 +10,7 @@
     <meta name="author" content="" >
     <link rel="icon" href="../favicon.png">
 
-    <title>CDMS_readline &ndash; CDMSreader</title>
+    <title>find_transition_number &ndash; CDMSreader</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -77,8 +77,8 @@
 
     <div class="container">
   <div class="row">
-    <h1>CDMS_readline
-      <small>Module Subroutine</small>
+    <h1>find_transition_number
+      <small>Interface</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -89,21 +89,21 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="17.4% of total for procedures.">56 statements</a>
+                 title="<p> 1.4% of total for procedures.</p>Including implementation: 32 statements, 11.2% of total for procedures.">4 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/CDMSreader__readwrite.f"> Source File</a>
+              <a href="../src/CDMSreader__types.f"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/cdmsreader__readwrite.f.html'>CDMSreader__readwrite.f</a></li>
-                <li class="breadcrumb-item"><a href='../module/cdmsreader__readwrite.html'>CDMSreader__readwrite</a></li>
-            <li class="breadcrumb-item active" aria-current="page">CDMS_readline</li>
+                <li class="breadcrumb-item"><a href='../sourcefile/cdmsreader__types.f.html'>CDMSreader__types.f</a></li>
+                <li class="breadcrumb-item"><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></li>
+            <li class="breadcrumb-item active" aria-current="page">find_transition_number</li>
           </ol>
         </nav>
       </div>
@@ -118,10 +118,10 @@
   </script>
 
   </div>
-  
+
   <div class="row">
     <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
-      <div id="sidebar">
+        <div id="sidebar">
       <h3>Contents</h3>
   
   
@@ -141,39 +141,41 @@
   
   
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#modprocs-0"
+         aria-expanded="false" aria-controls="modprocs-0">
+         <h4 class="card-header bg-primary text-white">Module Procedures</h4>
+      </a>
+      <div id="modprocs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../interface/find_transition_number.html#moduleprocedure-find_transition_number_nohfs">find_transition_number_nohfs</a>
+            <a class="list-group-item" href="../interface/find_transition_number.html#moduleprocedure-find_transition_number_hfs">find_transition_number_hfs</a>
+        </div>
+      </div>
+    </div>
+
   
 
 
   </div>
 
     </div>
-    
+
     <div class="col-md-9" id='text'>
-    <h2>public impure module subroutine CDMS_readline(funit, freq, err, EinstA, DR, ELO, GUP, TAG, qnfmt, qn, mol, io, skip, comment_char_in)  
-</h2>
-        <div class="card mb-4">
-      <h3 class="card-header card-title bg-light">Uses</h3>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <ul class="list-inline">
-                  <li class="list-inline-item"><a href='../module/cdmsreader__system.html'>CDMSreader__system</a></li>
-                  <li class="list-inline-item"><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-              </ul>
-            </li>
-        </ul>
-      </div>
-    </div>
+      <h2>public interface find_transition_number</h2>
+      
 
 
-    <p>Read "cat" file from the CDMS contents into appropriate arrays, with the capability to skip lines that are well-commented or blank
-the comment character defaults to "#", but can be set to anything not in the character NUMERIC also not whitespace</p>
 
+        <h2>Module Procedures</h2>
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-find_transition_number_nohfs"></span> <h3>private pure subroutine find_transition_number_nohfs(transition, transitions, i)  
+</h3></div>
+    <div class="card-body">
+        <p>Check if the transition "transition" is in the array of transitions "transitions"</p>
 
-    <h3>Arguments</h3>
-        <table class="table table-striped varlist">
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
     <thead>
       <tr>
         <th scope="col">Type</th>
@@ -185,178 +187,37 @@ the comment character defaults to "#", but can be set to anything not in the cha
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-funit"></span>
-              integer,
+              <span class="anchor" id="variable-transition"></span>
+              type(<a href='../type/asymtop_transition_nohfs.html'>asymtop_transition_nohfs</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>funit</strong></td>
+            <td><strong>transition</strong></td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-freq~2"></span>
-              real(kind=dp),
+              <span class="anchor" id="variable-transitions"></span>
+              type(<a href='../type/asymtop_transition_nohfs.html'>asymtop_transition_nohfs</a>),
             </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>freq</strong></td>
-            <td>
-                <p>Frequency of the line</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~2"></span>
-              real(kind=dp),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-                <p>Estimated or experimental error (999.9999 indicates error is larger)</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-einsta~5"></span>
-              real(kind=dp),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>EinstA</strong></td>
-            <td>
-                <p>The Einstein A coefficient</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dr"></span>
-              integer,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>DR</strong></td>
-            <td>
-                <p>Degrees of freedom in the rotational partition function (0 for atoms, 2 for linear molecules, and 3 for nonlinear molecules)</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-elo"></span>
-              real(kind=dp),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ELO</strong></td>
-            <td>
-                <p>Lower state energy in cm–1</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-gup"></span>
-              integer,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>GUP</strong></td>
-            <td>
-                <p>Upper state degeneracy</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tag"></span>
-              integer,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>TAG</strong></td>
-            <td>
-                <p>Species tag or molecular identifier. A negative value flags that the line frequency has been measured in the laboratory.
-The absolute value of TAG is then the species tag (as given in line 2 of file.int above) and ERR is the reported experimental
-error.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-qnfmt"></span>
-              integer,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>qnfmt</strong></td>
-            <td>
-                <p>Identifies the format of the quantum numbers given in the field QN.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-qn"></span>
-              integer,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>qn</strong>(12)</td>
-            <td>
-                <p>Twice the quantum numbers numbers. These are integers but are converted from their coding format
-according to QNFMT. Upper state quanta start in character 1. Lower state quanta start in character 14 (element 7).
-Unused quanta are blank, quanta whose magnitude is larger than 99 or smaller than –9 are shown with alphabetic characters
-or **. Quanta between –10 and –19 are shown as a0 through a9. Similarly, –20 is b0, etc., up to –259, which is shown as z9.
-Quanta between 100 and 109 are shown as A0 through A9. Similarly, 110 is B0, etc., up to 359, which is shown as Z9.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-mol"></span>
-              character(len=:),
-            </td>
-<td>intent(out),</td>
+<td>intent(in),</td>
               <td></td>            <td>
               allocatable
             </td>
             <td>::</td>
-            <td><strong>mol</strong></td>
+            <td><strong>transitions</strong>(:)</td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-io"></span>
+              <span class="anchor" id="variable-i~3"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -364,37 +225,7 @@ Quanta between 100 and 109 are shown as A0 through A9. Similarly, 110 is B0, etc
               
             </td>
             <td>::</td>
-            <td><strong>io</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-skip"></span>
-              logical,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>skip</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-comment_char_in"></span>
-              character(len=1),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>comment_char_in</strong></td>
+            <td><strong>i</strong></td>
             <td>
                 
             </td>
@@ -402,22 +233,81 @@ Quanta between 100 and 109 are shown as A0 through A9. Similarly, 110 is B0, etc
     </tbody>
   </table>
 
-    <br>
 
-
-    
-    
-
-    
-    
-
-
-
-    
-    
     </div>
   </div>
 
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-find_transition_number_hfs"></span> <h3>private pure subroutine find_transition_number_hfs(transition, transitions, i)  
+</h3></div>
+    <div class="card-body">
+        <p>Check if the transition "transition" is in the array of transitions "transitions"</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-transition~2"></span>
+              type(<a href='../type/asymtop_transition_hfs.html'>asymtop_transition_hfs</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>transition</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-transitions~2"></span>
+              type(<a href='../type/asymtop_transition_hfs.html'>asymtop_transition_hfs</a>),
+            </td>
+<td>intent(in),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>transitions</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~4"></span>
+              integer,
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+</div>
+  </div>
       <hr>
     </div> <!-- /container -->
     <footer>

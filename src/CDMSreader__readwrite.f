@@ -33,20 +33,20 @@ contains
   impure module subroutine CDMS_readfile_hfs(funit_in, funit_out, states_hfs, transitions_hfs)
     !! Read a file containing transitions from the CDMS, get ony states and transitions with hyperfine resolution.
     !! Wrapper for CDMS_readfile.
-    use CDMSreader__types, only: asymtop_state, asymtop_transition
+    use CDMSreader__types, only: asymtop_state_hfs, asymtop_state_nohfs, asymtop_transition_hfs, asymtop_transition_nohfs
     implicit none
     integer, intent(in) :: funit_in
       !! File unit for the CDMS data
     integer, intent(in) :: funit_out
       !! File unti for the processed data. If funit is 0, do not write output
-    class(asymtop_state),     intent(inout), allocatable :: states_hfs(:)
+    type(asymtop_state_hfs),     intent(inout), allocatable :: states_hfs(:)
       !! Array of states with hyperfine resolution
-    class(asymtop_transition), intent(inout), allocatable :: transitions_hfs(:)
+    type(asymtop_transition_hfs), intent(inout), allocatable :: transitions_hfs(:)
       !! Array of transitions with hyperfine resolution
 
-    class(asymtop_state),     allocatable :: states_nohfs(:)
+    type(asymtop_state_nohfs),     allocatable :: states_nohfs(:)
       !! Dummy array of states statistically averaged over hyperfine levels
-    class(asymtop_transition), allocatable :: transitions_nohfs(:)
+    type(asymtop_transition_nohfs), allocatable :: transitions_nohfs(:)
       !! Dummy array of transitions avveraged over hyperfine levels
 
     call CDMS_readfile(funit_in, funit_out, .true., .false., states_hfs, states_nohfs, transitions_hfs, transitions_nohfs)
@@ -57,20 +57,20 @@ contains
   impure module subroutine CDMS_readfile_nohfs(funit_in, funit_out, states_nohfs, transitions_nohfs)
     !! Read a file containing transitions from the CDMS, get ony states and transitions without hyperfine resolution.
     !! Wrapper for CDMS_readfile.
-    use CDMSreader__types, only: asymtop_state, asymtop_transition
+    use CDMSreader__types, only: asymtop_state_hfs, asymtop_state_nohfs, asymtop_transition_hfs, asymtop_transition_nohfs
     implicit none
     integer, intent(in) :: funit_in
       !! File unit for the CDMS data
     integer, intent(in) :: funit_out
       !! File unti for the processed data. If funit is 0, do not write output
-    class(asymtop_state),     intent(inout), allocatable :: states_nohfs(:)
+    type(asymtop_state_nohfs),     intent(inout), allocatable :: states_nohfs(:)
       !! Array of states statistically averaged over hyperfine levels
-    class(asymtop_transition), intent(inout), allocatable :: transitions_nohfs(:)
+    type(asymtop_transition_nohfs), intent(inout), allocatable :: transitions_nohfs(:)
       !! Array of transitions avveraged over hyperfine levels
 
-    class(asymtop_state),  allocatable :: states_hfs(:)
+    type(asymtop_state_hfs),  allocatable :: states_hfs(:)
       !! Dummy array of states with hyperfine resolution
-    class(asymtop_transition), allocatable :: transitions_hfs(:)
+    type(asymtop_transition_hfs), allocatable :: transitions_hfs(:)
       !! Dummy array of transitions with hyperfine resolution
 
     call CDMS_readfile(funit_in, funit_out, .false., .true., states_hfs, states_nohfs, transitions_hfs, transitions_nohfs)
@@ -102,13 +102,13 @@ contains
       !! Return states and transition arrays for hyperfine data ?
     logical, intent(in) :: return_nohfs
       !! Return states and transition arrays for non-hyperfine data ?
-    class(asymtop_state),     intent(inout), allocatable :: states_hfs(:)
+    type(asymtop_state_hfs),     intent(inout), allocatable :: states_hfs(:)
       !! Array of states with hyperfine resolution
-    class(asymtop_state),     intent(inout), allocatable :: states_nohfs(:)
+    type(asymtop_state_nohfs),     intent(inout), allocatable :: states_nohfs(:)
       !! Array of states statistically averaged over hyperfine levels
-    class(asymtop_transition), intent(inout), allocatable :: transitions_hfs(:)
+    type(asymtop_transition_hfs), intent(inout), allocatable :: transitions_hfs(:)
       !! Array of transitions with hyperfine resolution
-    class(asymtop_transition), intent(inout), allocatable :: transitions_nohfs(:)
+    type(asymtop_transition_nohfs), intent(inout), allocatable :: transitions_nohfs(:)
       !! Array of transitions avveraged over hyperfine levels
 
     ! -- data in the cat file
@@ -297,13 +297,10 @@ contains
         call sort_last_state(states_hfs, ilo)
         ! -- new hfs state, add to corresponding non hfs state
         if(return_nohfs .eqv. .true.) then
-          select type(state_nohfs => states_nohfs(ilo_nohfs))
-          type is (asymtop_state_nohfs)
-            state_nohfs % E     = state_nohfs % E     + Elo * degenlo
-            state_nohfs % degen = state_nohfs % degen + degenlo
-          class default
-            call die("Wrong type in lower asymtop non hfs state assignment")
-          end select
+        associate(state_nohfs => states_nohfs(ilo_nohfs))
+          state_nohfs % E     = state_nohfs % E     + Elo * degenlo
+          state_nohfs % degen = state_nohfs % degen + degenlo
+        end associate
         endif
       endif
 
@@ -316,13 +313,10 @@ contains
         call sort_last_state(states_hfs, iup)
         ! -- new hfs state, add to corresponding non hfs state
         if(return_nohfs .eqv. .true.) then
-          select type(state_nohfs => states_nohfs(iup_nohfs))
-          type is (asymtop_state_nohfs)
-            state_nohfs % E      = state_nohfs % E      + Eup    * degenup
-            state_nohfs % degen  = state_nohfs % degen  + degenup
-          class default
-            call die("Wrong type in upper asymtop non hfs state assignment")
-          end select
+        associate(state_nohfs => states_nohfs(iup_nohfs))
+          state_nohfs % E      = state_nohfs % E      + Eup    * degenup
+          state_nohfs % degen  = state_nohfs % degen  + degenup
+        end associate
         endif
       endif
 
@@ -342,13 +336,10 @@ contains
 
       ! -- finalize the non hfs states
       finalize_states_nohfs: do i = 1, size(states_nohfs, 1)
-        select type(state_nohfs => states_nohfs(i))
-        type is (asymtop_state_nohfs)
-          state_nohfs % E      = state_nohfs % E      / state_nohfs % degen
-          state_nohfs % EinstA = state_nohfs % EinstA / state_nohfs % degen
-        class default
-          call die("Wrong type in asymtop state finalization !")
-        end select
+      associate(state_nohfs => states_nohfs(i))
+        state_nohfs % E      = state_nohfs % E      / state_nohfs % degen
+        state_nohfs % EinstA = state_nohfs % EinstA / state_nohfs % degen
+      end associate
       enddo finalize_states_nohfs
 
       ! -- sort these now that their energies are finalized
@@ -357,39 +348,29 @@ contains
       ! -- finalize the non hfs transitions
       finalize_transitions_nohfs: do i = 1, size(transitions_nohfs, 1)
 
-        select type(ti => transitions_nohfs(i))
-        type is (asymtop_transition_nohfs)
+        associate(ti => transitions_nohfs(i), states => states_nohfs)
+        ! type is (asymtop_transition_nohfs)
 
           ! -- update the energy information of the states involved in
           !    the transition so that the transitions can be sorted
-          select type(states => states_nohfs)
-          type is (asymtop_state_nohfs)
+          ! select type(states => states_nohfs)
+          ! type is (asymtop_state_nohfs)
 
-            call find_state_number(ti%up, states_nohfs, iup)
-            call find_state_number(ti%lo, states_nohfs, ilo)
-            ti % up = states(iup)
-            ti % lo = states(ilo)
+          call find_state_number(ti%up, states_nohfs, iup)
+          call find_state_number(ti%lo, states_nohfs, ilo)
+          ti % up = states(iup)
+          ti % lo = states(ilo)
 
-            ! -- divide the accumulated quantities by their summed weights
-            ti % EinstA = ti % EinstA    / ti % up % degen
-            ti % freq   = ti % freq      / ti % up % degen
-            ti % err    = sqrt(ti % err) / ti % up % degen
+          ! -- divide the accumulated quantities by their summed weights
+          ti % EinstA = ti % EinstA    / ti % up % degen
+          ti % freq   = ti % freq      / ti % up % degen
+          ti % err    = sqrt(ti % err) / ti % up % degen
 
-            if(iup .eq. 0 .OR. ilo .eq. 0) then
-              call die("Unfound state in the array of states during non-HFS transition finalization !")
-            endif
+          if(iup .eq. 0 .OR. ilo .eq. 0) then
+            call die("Unfound state in the array of states during non-HFS transition finalization !")
+          endif
 
-          class default
-
-            call die("Somehow, states_nohfs is NOT of type asymtop_state_nohfs !")
-
-          end select
-
-        class default
-
-          call die("Wrong type in asymtop transition finalization !")
-
-        end select
+        end associate
 
       enddo finalize_transitions_nohfs
 

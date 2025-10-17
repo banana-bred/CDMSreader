@@ -89,7 +89,7 @@ and determines the lifetimes of various quantum states based on the provided inf
           <p>Reads molecular transition data from the Cologne Database for Molecular Spectroscopy (<a href="https://cdms.astro.uni-koeln.de/">CDMS</a>) catalogue
 to determine the radiative lifetimes of the various states involved in the transitions.
 The data must be obtained in the proper format by using the <a href="https://cdms.astro.uni-koeln.de/cgi-bin/cdmssearch">search and conversion form</a>.
-The user should ask for A values with the intensities being given as log values.
+<strong>The user should ask for A values with the intensities being given as log values.</strong>
 Units can be requested in GHz (will actually be in MHz) or inverse centimeters.</p>
 <p>For now, this only works for one molecule at a time and only for asymmetric top molecules that correspond to the case of Q=23 (see the <a href="https://cdms.astro.uni-koeln.de/classic/general">CDMS general</a> documentation for more details).</p>
 <p>Two sets of output data are produced.
@@ -162,7 +162,7 @@ Other compilers than gfortran will probably work just fine.</p>
           <div class="col-xs-6 col-sm-3">
             <div>
               <h3>Procedures</h3>
-              <ul><li><a href='interface/add_to.html'>add_to</a></li><li><a href='proc/cdms_readline.html'>CDMS_readline</a></li><li><a href='proc/die.html'>die</a></li><li><a href='proc/find_state_number.html'>find_state_number</a></li><li><a href='interface/make_asymtop_state.html'>make_asymtop_state</a></li><li><a href='proc/sort_last_state.html'>sort_last_state</a></li></ul>
+              <ul><li><a href='interface/add_to.html'>add_to</a></li><li><a href='proc/cdms_readfile.html'>CDMS_readfile</a></li><li><a href='proc/cdms_readfile_hfs.html'>CDMS_readfile_hfs</a></li><li><a href='proc/cdms_readfile_nohfs.html'>CDMS_readfile_nohfs</a></li><li><a href='proc/die.html'>die</a></li><li><a href='interface/find_state_number.html'>find_state_number</a></li></ul>
             </div>
             <div>
               <ul>
@@ -173,7 +173,7 @@ Other compilers than gfortran will probably work just fine.</p>
           <div class="col-xs-6 col-sm-3">
             <div>
               <h3>Derived Types</h3>
-              <ul><li><a href='type/asymtop_state.html'>asymtop_state</a></li><li><a href='type/asymtop_state_hfs.html'>asymtop_state_hfs</a></li><li><a href='type/asymtop_state_nohfs.html'>asymtop_state_nohfs</a></li><li><a href='type/asymtop_transition.html'>asymtop_transition</a></li></ul>
+              <ul><li><a href='type/asymtop_state.html'>asymtop_state</a></li><li><a href='type/asymtop_state_hfs.html'>asymtop_state_hfs</a></li><li><a href='type/asymtop_state_nohfs.html'>asymtop_state_nohfs</a></li><li><a href='type/asymtop_transition.html'>asymtop_transition</a></li><li><a href='type/asymtop_transition_hfs.html'>asymtop_transition_hfs</a></li><li><a href='type/asymtop_transition_nohfs.html'>asymtop_transition_nohfs</a></li></ul>
             </div>
             <div>
               <ul>

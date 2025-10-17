@@ -89,7 +89,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="38.7% of total for modules and submodules.">245 statements</a>
+                 title="42.1% of total for modules and submodules.">464 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -141,9 +141,9 @@
       </a>
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/cdmsreader__readwrite.html#proc-cdms_readline">CDMS_readline</a>
-            <a class="list-group-item" href="../module/cdmsreader__readwrite.html#proc-write_transitions">write_transitions</a>
-            <a class="list-group-item" href="../module/cdmsreader__readwrite.html#proc-write_states">write_states</a>
+            <a class="list-group-item" href="../module/cdmsreader__readwrite.html#proc-cdms_readfile_hfs">CDMS_readfile_hfs</a>
+            <a class="list-group-item" href="../module/cdmsreader__readwrite.html#proc-cdms_readfile_nohfs">CDMS_readfile_nohfs</a>
+            <a class="list-group-item" href="../module/cdmsreader__readwrite.html#proc-cdms_readfile">CDMS_readfile</a>
         </div>
       </div>
     </div>
@@ -177,12 +177,12 @@
         <section>
           <h2>Subroutines</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-cdms_readline"></span> <h3>public impure module subroutine <a href='../proc/cdms_readline.html'>CDMS_readline</a>(funit, freq, err, EinstA, DR, ELO, GUP, TAG, qnfmt, qn, mol, io, skip, comment_char_in)  
+    <div class="card-header codesum"><span class="anchor" id="proc-cdms_readfile_hfs"></span> <h3>public impure module subroutine <a href='../proc/cdms_readfile_hfs.html'>CDMS_readfile_hfs</a>(funit_in, funit_out, states_hfs, transitions_hfs)  
 </h3></div>
     <div class="card-body">
           
-  <p>Read "cat" file from the CDMS contents into appropriate arrays, with the capability to skip lines that are well-commented or blank
-the comment character defaults to "#", but can be set to anything not in the character NUMERIC also not whitespace</p>
+  <p>Read a file containing transitions from the CDMS, get ony states and transitions with hyperfine resolution.
+Wrapper for CDMS_readfile.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -197,7 +197,7 @@ the comment character defaults to "#", but can be set to anything not in the cha
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-funit"></span>
+              <span class="anchor" id="variable-funit_in"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -205,320 +205,286 @@ the comment character defaults to "#", but can be set to anything not in the cha
               
             </td>
             <td>::</td>
-            <td><strong>funit</strong></td>
+            <td><strong>funit_in</strong></td>
             <td>
-
+<p>File unit for the CDMS data</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-freq~2"></span>
-              real(kind=dp),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>freq</strong></td>
-            <td>
-<p>Frequency of the line</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-err~2"></span>
-              real(kind=dp),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>err</strong></td>
-            <td>
-<p>Estimated or experimental error (999.9999 indicates error is larger)</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-einsta~5"></span>
-              real(kind=dp),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>EinstA</strong></td>
-            <td>
-<p>The Einstein A coefficient</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dr"></span>
+              <span class="anchor" id="variable-funit_out"></span>
               integer,
             </td>
-<td>intent(out)</td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>DR</strong></td>
+            <td><strong>funit_out</strong></td>
             <td>
-<p>Degrees of freedom in the rotational partition function (0 for atoms, 2 for linear molecules, and 3 for nonlinear molecules)</p>
+<p>File unti for the processed data. If funit is 0, do not write output</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-elo"></span>
-              real(kind=dp),
+              <span class="anchor" id="variable-states_hfs"></span>
+              type(<a href='../type/asymtop_state_hfs.html'>asymtop_state_hfs</a>),
             </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ELO</strong></td>
-            <td>
-<p>Lower state energy in cm–1</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-gup"></span>
-              integer,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>GUP</strong></td>
-            <td>
-<p>Upper state degeneracy</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tag"></span>
-              integer,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>TAG</strong></td>
-            <td>
-<p>Species tag or molecular identifier. A negative value flags that the line frequency has been measured in the laboratory.
-The absolute value of TAG is then the species tag (as given in line 2 of file.int above) and ERR is the reported experimental
-error.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-qnfmt"></span>
-              integer,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>qnfmt</strong></td>
-            <td>
-<p>Identifies the format of the quantum numbers given in the field QN.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-qn"></span>
-              integer,
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>qn</strong>(12)</td>
-            <td>
-<p>Twice the quantum numbers numbers. These are integers but are converted from their coding format
-according to QNFMT. Upper state quanta start in character 1. Lower state quanta start in character 14 (element 7).
-Unused quanta are blank, quanta whose magnitude is larger than 99 or smaller than –9 are shown with alphabetic characters
-or **. Quanta between –10 and –19 are shown as a0 through a9. Similarly, –20 is b0, etc., up to –259, which is shown as z9.
-Quanta between 100 and 109 are shown as A0 through A9. Similarly, 110 is B0, etc., up to 359, which is shown as Z9.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-mol"></span>
-              character(len=:),
-            </td>
-<td>intent(out),</td>
+<td>intent(inout),</td>
               <td></td>            <td>
               allocatable
             </td>
             <td>::</td>
-            <td><strong>mol</strong></td>
+            <td><strong>states_hfs</strong>(:)</td>
             <td>
-
+<p>Array of states with hyperfine resolution</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-io"></span>
+              <span class="anchor" id="variable-transitions_hfs"></span>
+              type(<a href='../type/asymtop_transition_hfs.html'>asymtop_transition_hfs</a>),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>transitions_hfs</strong>(:)</td>
+            <td>
+<p>Array of transitions with hyperfine resolution</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-cdms_readfile_nohfs"></span> <h3>public impure module subroutine <a href='../proc/cdms_readfile_nohfs.html'>CDMS_readfile_nohfs</a>(funit_in, funit_out, states_nohfs, transitions_nohfs)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Read a file containing transitions from the CDMS, get ony states and transitions without hyperfine resolution.
+Wrapper for CDMS_readfile.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-funit_in~2"></span>
               integer,
             </td>
-<td>intent(out)</td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>io</strong></td>
+            <td><strong>funit_in</strong></td>
             <td>
-
+<p>File unit for the CDMS data</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-skip"></span>
+              <span class="anchor" id="variable-funit_out~2"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>funit_out</strong></td>
+            <td>
+<p>File unti for the processed data. If funit is 0, do not write output</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-states_nohfs~2"></span>
+              type(<a href='../type/asymtop_state_nohfs.html'>asymtop_state_nohfs</a>),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>states_nohfs</strong>(:)</td>
+            <td>
+<p>Array of states statistically averaged over hyperfine levels</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-transitions_nohfs~2"></span>
+              type(<a href='../type/asymtop_transition_nohfs.html'>asymtop_transition_nohfs</a>),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>transitions_nohfs</strong>(:)</td>
+            <td>
+<p>Array of transitions avveraged over hyperfine levels</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-cdms_readfile"></span> <h3>public impure module subroutine <a href='../proc/cdms_readfile.html'>CDMS_readfile</a>(funit_in, funit_out, return_hfs, return_nohfs, states_hfs, states_nohfs, transitions_hfs, transitions_nohfs)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Read a file containing transitions from the CDMS</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-funit_in~3"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>funit_in</strong></td>
+            <td>
+<p>File unit for the CDMS data. Must refer to a stream, like stdin or an opened file</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-funit_out~3"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>funit_out</strong></td>
+            <td>
+<p>File unti for the processed data. If funit is 0, do not write output. Must refer to
+a stream, like stdout or an opened file</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-return_hfs"></span>
               logical,
             </td>
-<td>intent(out)</td>
+<td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>skip</strong></td>
+            <td><strong>return_hfs</strong></td>
             <td>
-
+<p>Return states and transition arrays for hyperfine data ?</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-comment_char_in"></span>
-              character(len=1),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>comment_char_in</strong></td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-write_transitions"></span> <h3>public  subroutine <a href='../proc/write_transitions.html'>write_transitions</a>(funit, transitions)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>Writes the transitions in a legible format to the designated file unit</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-funit~2"></span>
-              integer,
+              <span class="anchor" id="variable-return_nohfs"></span>
+              logical,
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
               
             </td>
             <td>::</td>
-            <td><strong>funit</strong></td>
+            <td><strong>return_nohfs</strong></td>
             <td>
-<p>The file unit</p>
+<p>Return states and transition arrays for non-hyperfine data ?</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-transitions~4"></span>
-              type(<a href='../type/asymtop_transition.html'>asymtop_transition</a>),
+              <span class="anchor" id="variable-states_hfs~3"></span>
+              type(<a href='../type/asymtop_state_hfs.html'>asymtop_state_hfs</a>),
             </td>
-<td>intent(in)</td>
+<td>intent(inout),</td>
               <td></td>            <td>
-              
+              allocatable
             </td>
             <td>::</td>
-            <td><strong>transitions</strong>(:)</td>
+            <td><strong>states_hfs</strong>(:)</td>
             <td>
-<p>The array of transitions</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-write_states"></span> <h3>public  subroutine <a href='../proc/write_states.html'>write_states</a>(funit, states)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>Writes the states in a legible format to the designated file unit</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-funit~3"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>funit</strong></td>
-            <td>
-<p>The file unit</p>
+<p>Array of states with hyperfine resolution</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-states~7"></span>
-              class(<a href='../type/asymtop_state.html'>asymtop_state</a>),
+              <span class="anchor" id="variable-states_nohfs~3"></span>
+              type(<a href='../type/asymtop_state_nohfs.html'>asymtop_state_nohfs</a>),
             </td>
-<td>intent(in)</td>
+<td>intent(inout),</td>
               <td></td>            <td>
-              
+              allocatable
             </td>
             <td>::</td>
-            <td><strong>states</strong>(:)</td>
+            <td><strong>states_nohfs</strong>(:)</td>
             <td>
-<p>The array of states</p>
+<p>Array of states statistically averaged over hyperfine levels</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-transitions_hfs~3"></span>
+              type(<a href='../type/asymtop_transition_hfs.html'>asymtop_transition_hfs</a>),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>transitions_hfs</strong>(:)</td>
+            <td>
+<p>Array of transitions with hyperfine resolution</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-transitions_nohfs~3"></span>
+              type(<a href='../type/asymtop_transition_nohfs.html'>asymtop_transition_nohfs</a>),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>transitions_nohfs</strong>(:)</td>
+            <td>
+<p>Array of transitions avveraged over hyperfine levels</p>
             </td>
         </tr>
     </tbody>

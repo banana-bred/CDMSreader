@@ -10,7 +10,7 @@
     <meta name="author" content="" >
     <link rel="icon" href="../favicon.png">
 
-    <title>sort_last_transition &ndash; CDMSreader</title>
+    <title>asymtop_transition_nohfs &ndash; CDMSreader </title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -77,8 +77,8 @@
 
     <div class="container">
   <div class="row">
-    <h1>sort_last_transition
-      <small>Subroutine</small>
+    <h1>asymtop_transition_nohfs
+      <small>Derived Type</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -89,7 +89,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 6.2% of total for procedures.">20 statements</a>
+                 title="<p>13.3% of total for derived types.</p>Including implementation: 4 statements, 13.3% of total for derived types.">4 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -103,7 +103,7 @@
           <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../sourcefile/cdmsreader__types.f.html'>CDMSreader__types.f</a></li>
                 <li class="breadcrumb-item"><a href='../module/cdmsreader__types.html'>CDMSreader__types</a></li>
-            <li class="breadcrumb-item active" aria-current="page">sort_last_transition</li>
+            <li class="breadcrumb-item active" aria-current="page">asymtop_transition_nohfs</li>
           </ol>
         </nav>
       </div>
@@ -124,7 +124,24 @@
       <div id="sidebar">
       <h3>Contents</h3>
   
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../type/asymtop_transition_nohfs.html#variable-freq">freq</a>
+            <a class="list-group-item" href="../type/asymtop_transition_nohfs.html#variable-einsta~2">EinstA</a>
+            <a class="list-group-item" href="../type/asymtop_transition_nohfs.html#variable-err">err</a>
+            <a class="list-group-item" href="../type/asymtop_transition_nohfs.html#variable-dr">dr</a>
+            <a class="list-group-item" href="../type/asymtop_transition_nohfs.html#variable-gup">gup</a>
+            <a class="list-group-item" href="../type/asymtop_transition_nohfs.html#variable-up~2">up</a>
+            <a class="list-group-item" href="../type/asymtop_transition_nohfs.html#variable-lo~2">lo</a>
+        </div>
+      </div>
+    </div>
+
   
   
   
@@ -150,66 +167,151 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>public impure subroutine sort_last_transition(transitions)  
-</h2>
-        <div class="card mb-4">
-      <h3 class="card-header card-title bg-light">Uses</h3>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <ul class="list-inline">
-                  <li class="list-inline-item"><a href='../module/cdmsreader__system.html'>CDMSreader__system</a></li>
-              </ul>
-            </li>
-        </ul>
-      </div>
-    </div>
+      <h2 id="type-def-statement">
+        type, public, extends(<a href='asymtop_transition.html'>asymtop_transition</a>) :: asymtop_transition_nohfs</h2>
+    
+    <br>
 
-
-    <p>Sort the last element in the array to where it should go, assuming the rest of the array is sorted</p>
-
-
-    <h3>Arguments</h3>
-        <table class="table table-striped varlist">
+    <section>
+    <h2>Components</h2>
+      <table class="table table-striped varlist">
     <thead>
       <tr>
         <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
         <th scope="col"></th>
         <th scope="col">Name</th>
-        <th scope="col"></th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
     </thead>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-transitions~3"></span>
-              type(<a href='../type/asymtop_transition.html'>asymtop_transition</a>),
+              <span class="anchor" id="variable-freq"></span>
+              real(kind=dp),
             </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
+              <td>public</td>
+            <td>
               
             </td>
             <td>::</td>
-            <td><strong>transitions</strong>(:)</td>
+            <td><strong>freq</strong></td>
+                <td></td>
+                <td></td>
             <td>
-                <p>The array of transitions</p>
+                <p>The frequency of the transition</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-einsta~2"></span>
+              real(kind=dp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>EinstA</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>The Einstein coefficient A</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-err"></span>
+              real(kind=dp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>err</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>The error</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dr"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dr</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Degrees of freedom</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gup"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>gup</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Upper level degeneracy</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-up~2"></span>
+              type(<a href='asymtop_state_nohfs.html'>asymtop_state_nohfs</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>up</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Upper state</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lo~2"></span>
+              type(<a href='asymtop_state_nohfs.html'>asymtop_state_nohfs</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lo</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Lower stat</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    </section>
     <br>
-
-
-    
-    
-
-    
     
 
 
 
-    
     
     </div>
   </div>

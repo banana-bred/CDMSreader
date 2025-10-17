@@ -89,7 +89,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 1.6% of total for procedures.</p>Including implementation: 51 statements, 15.9% of total for procedures.">5 statements</a>
+                 title="<p> 2.1% of total for procedures.</p>Including implementation: 74 statements, 25.9% of total for procedures.">6 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -148,9 +148,10 @@
       </a>
       <div id="modprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../interface/add_to.html#moduleprocedure-add_state_to_hfs">add_state_to_hfs</a>
             <a class="list-group-item" href="../interface/add_to.html#moduleprocedure-add_state_to_nohfs">add_state_to_nohfs</a>
-            <a class="list-group-item" href="../interface/add_to.html#moduleprocedure-add_transition_to">add_transition_to</a>
+            <a class="list-group-item" href="../interface/add_to.html#moduleprocedure-add_state_to_hfs">add_state_to_hfs</a>
+            <a class="list-group-item" href="../interface/add_to.html#moduleprocedure-add_transition_to_nohfs">add_transition_to_nohfs</a>
+            <a class="list-group-item" href="../interface/add_to.html#moduleprocedure-add_transition_to_hfs">add_transition_to_hfs</a>
         </div>
       </div>
     </div>
@@ -170,61 +171,7 @@
 
         <h2>Module Procedures</h2>
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-add_state_to_hfs"></span> <h3>private module subroutine add_state_to_hfs(state, states)  
-</h3></div>
-    <div class="card-body">
-        <p>Add state "state" to the array of states "states"</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-state~3"></span>
-              type(<a href='../type/asymtop_state_hfs.html'>asymtop_state_hfs</a>),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>state</strong></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-states~3"></span>
-              class(<a href='../type/asymtop_state.html'>asymtop_state</a>),
-            </td>
-<td>intent(inout),</td>
-              <td></td>            <td>
-              allocatable
-            </td>
-            <td>::</td>
-            <td><strong>states</strong>(:)</td>
-            <td>
-                
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-            <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-add_state_to_nohfs"></span> <h3>private module subroutine add_state_to_nohfs(state, states)  
+    <div class="card-header codesum"><span class="anchor" id="proc-add_state_to_nohfs"></span> <h3>private pure module subroutine add_state_to_nohfs(state, states)  
 </h3></div>
     <div class="card-body">
         <p>Add state "state" to the array of states "states"</p>
@@ -258,7 +205,7 @@
         <tr>
             <td>
               <span class="anchor" id="variable-states~4"></span>
-              class(<a href='../type/asymtop_state.html'>asymtop_state</a>),
+              type(<a href='../type/asymtop_state_nohfs.html'>asymtop_state_nohfs</a>),
             </td>
 <td>intent(inout),</td>
               <td></td>            <td>
@@ -278,7 +225,61 @@
   </div>
 
             <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-add_transition_to"></span> <h3>private pure module subroutine add_transition_to(transition, transitions)  
+    <div class="card-header codesum"><span class="anchor" id="proc-add_state_to_hfs"></span> <h3>private pure module subroutine add_state_to_hfs(state, states)  
+</h3></div>
+    <div class="card-body">
+        <p>Add state "state" to the array of states "states"</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state~5"></span>
+              type(<a href='../type/asymtop_state_hfs.html'>asymtop_state_hfs</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>state</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-states~5"></span>
+              type(<a href='../type/asymtop_state_hfs.html'>asymtop_state_hfs</a>),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>states</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-add_transition_to_nohfs"></span> <h3>private pure module subroutine add_transition_to_nohfs(transition, transitions)  
 </h3></div>
     <div class="card-body">
         <p>Add transition "transition" to the array of transitions "transitions"</p>
@@ -296,8 +297,8 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-transition~2"></span>
-              type(<a href='../type/asymtop_transition.html'>asymtop_transition</a>),
+              <span class="anchor" id="variable-transition~4"></span>
+              type(<a href='../type/asymtop_transition_nohfs.html'>asymtop_transition_nohfs</a>),
             </td>
 <td>intent(in)</td>
               <td></td>            <td>
@@ -311,8 +312,62 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-transitions~2"></span>
-              type(<a href='../type/asymtop_transition.html'>asymtop_transition</a>),
+              <span class="anchor" id="variable-transitions~4"></span>
+              type(<a href='../type/asymtop_transition_nohfs.html'>asymtop_transition_nohfs</a>),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>transitions</strong>(:)</td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+            <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-add_transition_to_hfs"></span> <h3>private pure module subroutine add_transition_to_hfs(transition, transitions)  
+</h3></div>
+    <div class="card-body">
+        <p>Add transition "transition" to the array of transitions "transitions"</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-transition~5"></span>
+              type(<a href='../type/asymtop_transition_hfs.html'>asymtop_transition_hfs</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>transition</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-transitions~5"></span>
+              type(<a href='../type/asymtop_transition_hfs.html'>asymtop_transition_hfs</a>),
             </td>
 <td>intent(inout),</td>
               <td></td>            <td>

@@ -1,3 +1,19 @@
+! CDMSreader: reads transition data from the CDMS and determines the average lifetimes of the involved states
+! Copyright (C) 2025 Josh Forer <j.forer@posteo.net>
+!
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 2 of the License, or
+! (at your option) any later version.
+!
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License along
+! with this program; if not, write to the Free Software Foundation, Inc.,
+! 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ! ================================================================================================================================ !
 module CDMSreader__types
   !! Contains type definitions and procedures for those types
@@ -13,13 +29,17 @@ module CDMSreader__types
   public :: asymtop_state_hfs
   public :: asymtop_state_nohfs
   public :: asymtop_transition
+  public :: asymtop_transition_hfs
+  public :: asymtop_transition_nohfs
 
   ! -- routines
   public :: sort_last_transition
   public :: add_to
   public :: find_state_number
+  public :: find_transition_number
   public :: sort_last_state
   public :: sort_states
+  public :: sort_transitions
   public :: make_asymtop_state
 
   integer, parameter, public :: sp = real32
@@ -58,12 +78,8 @@ module CDMSreader__types
       !! \(\vec{F} = \vec{J} + \vec{I} =  \vec{N} + \vec{S} + \vec{I} \)
   end type asymtop_state_hfs
 
-  type asymtop_transition
+  type, abstract :: asymtop_transition
     !! Corresponds to a transition
-    type(asymtop_state_hfs) :: up
-      !! Upper state
-    type(asymtop_state_hfs) :: lo
-      !! Lower stat
     real(dp) :: freq
       !! The frequency of the transition
     real(dp) :: EinstA
@@ -76,32 +92,46 @@ module CDMSreader__types
       !! Upper level degeneracy
   end type asymtop_transition
 
-  ! interface operator(.isin.)
-  !   module procedure :: state_is_in
-  !   module procedure :: transition_is_in
-  ! end interface operator(.isin.)
+  type, extends(asymtop_transition) :: asymtop_transition_hfs
+    type(asymtop_state_hfs) :: up
+      !! Upper state
+    type(asymtop_state_hfs) :: lo
+      !! Lower stat
+  end type asymtop_transition_hfs
+
+  type, extends(asymtop_transition) :: asymtop_transition_nohfs
+    type(asymtop_state_nohfs) :: up
+      !! Upper state
+    type(asymtop_state_nohfs) :: lo
+      !! Lower stat
+  end type asymtop_transition_nohfs
 
   interface operator(.precedes.)
     module procedure :: precedes_state
+    module procedure :: precedes_transition_hfs
+    module procedure :: precedes_transition_nohfs
   end interface operator(.precedes.)
 
   interface assignment(=)
     module procedure :: state_set_eq
+    module procedure :: transition_set_eq
   end interface assignment(=)
 
   interface operator(.eq.)
     module procedure :: state_iseq
+    module procedure :: transition_iseq
   end interface operator(.eq.)
 
   interface operator(.ne.)
     module procedure :: state_ne
+    module procedure :: transition_ne
   end interface operator(.ne.)
 
   interface add_to
-    ! module procedure :: add_state_to
-    module procedure :: add_state_to_hfs
     module procedure :: add_state_to_nohfs
-    module procedure :: add_transition_to
+    module procedure :: add_state_to_hfs
+    module procedure :: add_transition_to_nohfs
+    module procedure :: add_transition_to_hfs
   end interface add_to
 
   interface make_asymtop_state
@@ -109,10 +139,32 @@ module CDMSreader__types
     module procedure :: make_asymtop_state_nohfs
   end interface make_asymtop_state
 
+  interface find_state_number
+    module procedure :: find_state_number_nohfs
+    module procedure :: find_state_number_hfs
+  end interface find_state_number
+
+  interface find_transition_number
+    module procedure :: find_transition_number_nohfs
+    module procedure :: find_transition_number_hfs
+  end interface find_transition_number
+
+  interface sort_last_transition
+    module procedure :: sort_last_transition_hfs
+    module procedure :: sort_last_transition_nohfs
+  end interface sort_last_transition
+
+  interface sort_transitions
+    module procedure :: sort_transitions_hfs
+    module procedure :: sort_transitions_nohfs
+  end interface sort_transitions
+
+! ================================================================================================================================ !
 contains
+! ================================================================================================================================ !
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  impure elemental function state_iseq(state1, state2) result(res)
+  pure elemental function state_iseq(state1, state2) result(res)
     !! Checks if two states are equal
     use CDMSreader__system, only: die
     implicit none
@@ -120,6 +172,7 @@ contains
     class(asymtop_state), intent(in) :: state2
     logical :: res
     res = .false.
+    if(same_type_as(state1, state2) .eqv. .false.) call die("STATE1 and STATE2 have different types in equality test")
     if(state1 % dN    .ne. state2 % dN)    return
     if(state1 % dKa   .ne. state2 % dKa)   return
     if(state1 % dKc   .ne. state2 % dKc)   return
@@ -138,7 +191,37 @@ contains
   end function state_iseq
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  impure elemental function state_ne(state1, state2) result(res)
+  pure elemental function transition_iseq(transition1, transition2) result(res)
+    !! Checks if two transitions are equal
+    use CDMSreader__system, only: die
+    implicit none
+    class(asymtop_transition), intent(in) :: transition1
+    class(asymtop_transition), intent(in) :: transition2
+    logical :: res
+    res = .false.
+    select type(transition1)
+    type is (asymtop_transition_hfs)
+      select type(transition2)
+      type is (asymtop_transition_hfs)
+        if(transition1 % lo .ne. transition2 % lo) return
+        if(transition1 % up .ne. transition2 % up) return
+      class default
+        call die("Trying to test equality between an hfs and non hfs state in a transition !")
+      end select
+    type is (asymtop_transition_nohfs)
+      select type(transition2)
+      type is (asymtop_transition_nohfs)
+        if(transition1 % lo .ne. transition2 % lo) return
+        if(transition1 % up .ne. transition2 % up) return
+      class default
+        call die("Trying to test equality between an hfs and non hfs state in a transition !")
+      end select
+    end select
+    res = .true.
+  end function transition_iseq
+
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure elemental function state_ne(state1, state2) result(res)
     !! Checks if two states are not equal
     implicit none
     class(asymtop_state), intent(in) :: state1
@@ -148,55 +231,83 @@ contains
   end function state_ne
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  subroutine find_state_number(state, states, i)
-    !! Check if the state "state" is in the array of states "states"
-
-    use CDMSreader__system, only: die
-
+  pure elemental function transition_ne(transition1, transition2) result(res)
+    !! Checks if two transitions are not equal
     implicit none
-
-    class(asymtop_state), intent(in) :: state
-    class(asymtop_state), intent(in), allocatable :: states(:)
-    integer, intent(out) :: i
-
-    i = 0
-
-    if(.not. allocated(states)) return
-
-    do i = 1, size(states, 1)
-      if(state % dN    .ne. states(i) % dN)    cycle
-      if(state % dKa   .ne. states(i) % dKa)   cycle
-      if(state % dKc   .ne. states(i) % dKc)   cycle
-
-      ! -- additional criteria if we have hyperfine structure
-      select type (s => state)
-      type is (asymtop_state_hfs)
-
-        select type (si => states(i))
-        type is (asymtop_state_hfs)
-
-          if(s % dJ    .ne. si % dJ)    cycle
-          if(s % dItot .ne. si % dItot) cycle
-          if(s % dF    .ne. si % dF)    cycle
-
-        class default
-
-          call die("Trying to find an hfs state in an array of non hfs states !")
-
-        end select
-
-      end select
-
-      return
-
-    enddo
-
-    i = 0
-
-  end subroutine find_state_number
+    class(asymtop_transition), intent(in) :: transition1
+    class(asymtop_transition), intent(in) :: transition2
+    logical :: res
+    res = .not. (transition1 .eq. transition2)
+  end function transition_ne
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  impure function state_is_in(state, states) result(res)
+  pure subroutine find_state_number_nohfs(state, states, i)
+    !! Check if the state "state" is in the array of states "states"
+    use CDMSreader__system, only: die
+    implicit none
+    type(asymtop_state_nohfs), intent(in) :: state
+    type(asymtop_state_nohfs), intent(in), allocatable :: states(:)
+    integer, intent(out) :: i
+    i = 0
+    if(.not. allocated(states)) return
+    do i = 1, size(states, 1)
+      if( state .ne. states(i) ) cycle
+      return
+    enddo
+    i = 0
+  end subroutine find_state_number_nohfs
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure subroutine find_state_number_hfs(state, states, i)
+    !! Check if the state "state" is in the array of states "states"
+    use CDMSreader__system, only: die
+    implicit none
+    type(asymtop_state_hfs), intent(in) :: state
+    type(asymtop_state_hfs), intent(in), allocatable :: states(:)
+    integer, intent(out) :: i
+    i = 0
+    if(.not. allocated(states)) return
+    do i = 1, size(states, 1)
+      if( state .ne. states(i) ) cycle
+      return
+    enddo
+    i = 0
+  end subroutine find_state_number_hfs
+
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure subroutine find_transition_number_nohfs(transition, transitions, i)
+    !! Check if the transition "transition" is in the array of transitions "transitions"
+    use CDMSreader__system, only: die
+    implicit none
+    type(asymtop_transition_nohfs), intent(in) :: transition
+    type(asymtop_transition_nohfs), intent(in), allocatable :: transitions(:)
+    integer, intent(out) :: i
+    i = 0
+    if(.not. allocated(transitions)) return
+    do i = 1, size(transitions, 1)
+      if(transition .ne. transitions(i)) cycle
+      return
+    enddo
+    i = 0
+  end subroutine find_transition_number_nohfs
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure subroutine find_transition_number_hfs(transition, transitions, i)
+    !! Check if the transition "transition" is in the array of transitions "transitions"
+    use CDMSreader__system, only: die
+    implicit none
+    type(asymtop_transition_hfs), intent(in) :: transition
+    type(asymtop_transition_hfs), intent(in), allocatable :: transitions(:)
+    integer, intent(out) :: i
+    i = 0
+    if(.not. allocated(transitions)) return
+    do i = 1, size(transitions, 1)
+      if(transition .ne. transitions(i)) cycle
+      return
+    enddo
+    i = 0
+  end subroutine find_transition_number_hfs
+
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure function state_is_in(state, states) result(res)
     !! Check if the state "state" is in the array of states "states"
     implicit none
     class(asymtop_state), intent(in) :: state
@@ -213,82 +324,102 @@ contains
   end function state_is_in
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  impure function transition_is_in(transition, transitions) result(res)
+  pure function transition_is_in(transition, transitions) result(res)
     !! Check if the transition "transition" is in the array of transitions "transitions"
     implicit none
-    type(asymtop_transition), intent(in) :: transition
-    type(asymtop_transition), intent(in), allocatable :: transitions(:)
+    class(asymtop_transition), intent(in) :: transition
+    class(asymtop_transition), intent(in), allocatable :: transitions(:)
     logical :: res
     integer :: i
     res = .false.
     if(.not. allocated(transitions)) return
     do i = 1, size(transitions, 1)
-      if(transition % up .ne. transitions(i) % up) cycle
-      if(transition % lo .ne. transitions(i) % lo) cycle
+      if(transition .ne. transitions(i)) cycle
       res = .true.
       return
     enddo
   end function transition_is_in
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  module subroutine add_state_to_hfs(state, states)
+  pure module subroutine add_state_to_nohfs(state, states)
     !! Add state "state" to the array of states "states"
     implicit none
-    type(asymtop_state_hfs), intent(in) :: state
-    class(asymtop_state), intent(inout), allocatable :: states(:)
-    class(asymtop_state), allocatable :: tmp(:)
+    type(asymtop_state_nohfs), intent(in) :: state
+    type(asymtop_state_nohfs), intent(inout), allocatable :: states(:)
+    type(asymtop_state_nohfs), allocatable :: tmp(:)
     integer :: n
     if(.not. allocated(states)) then
       allocate(states(1), source = state)
-      states(1) = state
     else
       n = size(states, 1)
       call move_alloc(states, tmp)
-      allocate(states(n+1), source = state)
+      allocate(states(n+1), source = tmp(1))
+      states(1:n) = tmp(1:n)
+      states(n+1) = state
+      deallocate(tmp)
+    endif
+  end subroutine add_state_to_nohfs
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure module subroutine add_state_to_hfs(state, states)
+    !! Add state "state" to the array of states "states"
+    implicit none
+    type(asymtop_state_hfs), intent(in) :: state
+    type(asymtop_state_hfs), intent(inout), allocatable :: states(:)
+    type(asymtop_state_hfs), allocatable :: tmp(:)
+    integer :: n
+    if(.not. allocated(states)) then
+      allocate(states(1), source = state)
+    else
+      n = size(states, 1)
+      call move_alloc(states, tmp)
+      allocate(states(n+1), source = tmp(1))
       states(1:n) = tmp(1:n)
       states(n+1) = state
       deallocate(tmp)
     endif
   end subroutine add_state_to_hfs
-
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  module subroutine add_state_to_nohfs(state, states)
-    !! Add state "state" to the array of states "states"
-    implicit none
-    type(asymtop_state_nohfs), intent(in) :: state
-    class(asymtop_state), intent(inout), allocatable :: states(:)
-    class(asymtop_state), allocatable :: tmp(:)
-    integer :: n
-    if(.not. allocated(states)) then
-      allocate(states(1), source = state)
-      states(1) = state
-      return
-    endif
-    n = size(states, 1)
-    call move_alloc(states, tmp)
-    allocate(states(n+1), source = state)
-    states(1:n) = tmp(1:n)
-    states(n+1) = state
-    deallocate(tmp)
-  end subroutine add_state_to_nohfs
-
-  ! ------------------------------------------------------------------------------------------------------------------------------ !
-  pure module subroutine add_transition_to(transition, transitions)
+  pure module subroutine add_transition_to_nohfs(transition, transitions)
     !! Add transition "transition" to the array of transitions "transitions"
     implicit none
-    type(asymtop_transition), intent(in) :: transition
-    type(asymtop_transition), intent(inout), allocatable :: transitions(:)
+    type(asymtop_transition_nohfs), intent(in) :: transition
+    type(asymtop_transition_nohfs), intent(inout), allocatable :: transitions(:)
+    type(asymtop_transition_nohfs), allocatable :: tmp(:)
+    integer :: n
     if(.not. allocated(transitions)) then
-      transitions = [transition]
-    else
-      transitions = [transitions, transition]
+      allocate(transitions(1), source = transition)
+      return
     endif
-  end subroutine add_transition_to
+    n = size(transitions, 1)
+    call move_alloc(transitions, tmp)
+    allocate(transitions(n+1), source = tmp(1))
+    transitions(1:n) = tmp(1:n)
+    transitions(n+1) = transition
+    deallocate(tmp)
+  end subroutine add_transition_to_nohfs
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure module subroutine add_transition_to_hfs(transition, transitions)
+    !! Add transition "transition" to the array of transitions "transitions"
+    implicit none
+    type(asymtop_transition_hfs), intent(in) :: transition
+    type(asymtop_transition_hfs), intent(inout), allocatable :: transitions(:)
+    type(asymtop_transition_hfs), allocatable :: tmp(:)
+    integer :: n
+    if(.not. allocated(transitions)) then
+      allocate(transitions(1), source = transition)
+      return
+    endif
+    n = size(transitions, 1)
+    call move_alloc(transitions, tmp)
+    allocate(transitions(n+1), source = tmp(1))
+    transitions(1:n) = tmp(1:n)
+    transitions(n+1) = transition
+    deallocate(tmp)
+  end subroutine add_transition_to_hfs
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
   pure elemental function precedes_state(state1, state2) result(res)
-    !! Test whether state 1 precedes state 2 in the arbitrary sorting of states by
-    !! J, Ka, Kc, J, Itot, and finally F
+    !! Test whether state 1 precedes state 2 based on their energies
     implicit none
     class(asymtop_state), intent(in) :: state1
     class(asymtop_state), intent(in) :: state2
@@ -297,167 +428,273 @@ contains
     if(state1 % E .lt. state2 % E) return
     res = .false.
   end function precedes_state
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure elemental function precedes_transition_hfs(transition1, transition2) result(res)
+    !! Test whether transition 1 precedes transition 2 in the sense where
+    !! Elo(1) < Elo(2) and Eup(1) < Eup(2)
+    use CDMSreader__system, only: die
+    implicit none
+    type(asymtop_transition_hfs), intent(in) :: transition1
+    type(asymtop_transition_hfs), intent(in) :: transition2
+    logical :: res
+    res = .false.
+    if(transition1 % lo .precedes. transition2 % lo) then
+      res = .true. ; return
+    elseif(transition1 % up .precedes. transition2 % up) then
+      res = .true. ; return
+    endif
+  end function precedes_transition_hfs
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure elemental function precedes_transition_nohfs(transition1, transition2) result(res)
+    !! Test whether transition 1 precedes transition 2 in the sense where
+    !! Elo(1) < Elo(2) and Eup(1) < Eup(2)
+    use CDMSreader__system, only: die
+    implicit none
+    type(asymtop_transition_nohfs), intent(in) :: transition1
+    type(asymtop_transition_nohfs), intent(in) :: transition2
+    logical :: res
+    res = .false.
+    if(transition1 % lo .precedes. transition2 % lo) then
+      res = .true. ; return
+    elseif(transition1 % up .precedes. transition2 % up) then
+      res = .true. ; return
+    endif
+  end function precedes_transition_nohfs
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  impure subroutine sort_last_transition(transitions)
-    !! Sort the last element in the array to where it should go, assuming the rest of the array is sorted
+  pure subroutine sort_last_transition_hfs(transitions, iout)
+    !! Sort the last element in the array to where it should go, assuming the rest of the array is sorted.
+    !! Optionally return the index of the sorted element
     use CDMSreader__system, only: die
-
     implicit none
-
-    type(asymtop_transition), intent(inout) :: transitions(:)
+    type(asymtop_transition_hfs), intent(inout) :: transitions(:)
       !! The array of transitions
-
+    type(asymtop_transition_hfs), allocatable :: tmp(:)
+    integer, intent(out), optional :: iout
+      !! The array to which the last state was sorted
     integer :: i, k, n
-    type(asymtop_transition) :: last
-
+    type(asymtop_transition_hfs), allocatable :: last
     n = size(transitions, 1)
-
-    last = transitions(n)
-
-    i = findloc( (last % lo .precedes. transitions(1:n-1) % lo) &
-           .AND. (last % up .precedes. transitions(1:n-1) % up) &
-               , value = .true.                                 &
-               , dim = 1                                        &
+    ! allocate(last, source = transitions(n))
+    i = findloc( (transitions(n) .precedes. transitions(1:n-1)) &
+               , value = .true.             &
+               , dim = 1                    &
         )
-
-
     select case(i)
     case(:-1)
       call die("Findloc returned a negative index in transition sort !")
-
     case(0)
       ! -- locical mask is all .false. ; last is last
+      if(present(iout)) iout = n
       return
-
     case(1)
+      ! transitions = [last, transitions(1:n-1)]
       ! -- locical mask is all .true. ; last is first
-      transitions = [last, transitions(1:n-1)]
-
+      allocate(tmp,  source = transitions(1:n-1))
+      allocate(last, source = transitions(n))
+      ! tmp = transitions(1:n-1)
+      transitions(2:n) = tmp
+      transitions(1)   = last
+      if(present(iout)) iout = 1
     case default
-
-      transitions = [transitions(1:i-1), last, transitions(i:n-1)]
-
+      allocate(tmp, source = transitions(i:n-1))
+      allocate(last, source = transitions(n))
+      ! tmp = transitions(i:n-1)
+      transitions(i+1:n)     = tmp
+      transitions(i)         = last
+      if(present(iout)) iout = i
     end select
-
-  end subroutine sort_last_transition
+    deallocate(tmp)
+  end subroutine sort_last_transition_hfs
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure subroutine sort_last_transition_nohfs(transitions, iout)
+    !! Sort the last element in the array to where it should go, assuming the rest of the array is sorted.
+    !! Optionally return the index of the sorted element
+    use CDMSreader__system, only: die
+    implicit none
+    type(asymtop_transition_nohfs), intent(inout) :: transitions(:)
+      !! The array of transitions
+    type(asymtop_transition_nohfs), allocatable :: tmp(:)
+    integer, intent(out), optional :: iout
+      !! The array to which the last state was sorted
+    integer :: i, k, n
+    type(asymtop_transition_nohfs), allocatable :: last
+    n = size(transitions, 1)
+    allocate(last, source = transitions(n))
+    i = findloc( (last .precedes. transitions(1:n-1)) &
+               , value = .true.             &
+               , dim = 1                    &
+        )
+    select case(i)
+    case(:-1)
+      call die("Findloc returned a negative index in transition sort !")
+    case(0)
+      ! -- locical mask is all .false. ; last is last
+      if(present(iout)) iout = n
+      return
+    case(1)
+      ! transitions = [last, transitions(1:n-1)]
+      ! -- locical mask is all .true. ; last is first
+      allocate(tmp, source = transitions(1:n-1))
+      ! tmp = transitions(1:n-1)
+      transitions(2:n) = tmp
+      transitions(1)   = last
+      if(present(iout)) iout = 1
+    case default
+      allocate(tmp, source = transitions(i:n-1))
+      ! tmp = transitions(i:n-1)
+      transitions(i+1:n)     = tmp
+      transitions(i)         = last
+      if(present(iout)) iout = i
+    end select
+    deallocate(tmp)
+  end subroutine sort_last_transition_nohfs
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  impure subroutine sort_last_state(states, iout)
+  pure subroutine sort_last_state(states, iout)
     !! Sort the last element in the array to where it should go, assuming the rest of the array is sorted
     use CDMSreader__system, only: die
-
     implicit none
-
-    class(asymtop_state), intent(inout), allocatable, target :: states(:)
+    class(asymtop_state), intent(inout) :: states(:)
       !! The array of states
     integer, intent(out), optional :: iout
       !! The array to which the last state was sorted
     class(asymtop_state), allocatable :: last
     class(asymtop_state), allocatable :: tmp(:)
     integer :: i, k, n
-
     n = size(states, 1)
-
     allocate(last, source = states(n))
     last = states(n)
-
     i = findloc( (last .precedes. states(1:n-1)), value = .true., dim = 1 )
-
     select case(i)
     case(:-1)
       call die("Findloc returned a negative index in state sort !")
-
     case(0)
       ! -- locical mask is all .false. ; last is last
       if(present(iout)) iout = n
       return
-
     case(1)
       ! -- locical mask is all .true. ; last is first
-      call move_alloc(states, tmp)
-      allocate(states(n), source = last)
+      allocate(tmp, source=states(1:n-1))
+      ! tmp = states(1:n-1)
+      states(2:n) = tmp
       states(1)   = last
-      states(2:n) = tmp(1:n-1)
       deallocate(tmp)
       if(present(iout)) iout = 1
-
     case default
-
-      call move_alloc(states, tmp)
-      allocate(states(n), source = last)
-      states(1:i-1)   = tmp(1:i-1)
-      states(i)       = last
-      states(i+1:n) = tmp(i:n-1)
-      if(present(iout)) iout = i
+      allocate(tmp, source=states(i:n-1))
+      ! tmp = states(i:n-1)
+      states(i+1:n) = tmp
+      states(i)     = last
       deallocate(tmp)
-
+      if(present(iout)) iout = i
     end select
-
     if(n .ne. size(states)) call die("The size of the states array has changed during the sort !")
-
   end subroutine sort_last_state
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  impure subroutine sort_states(states)
+  pure subroutine sort_states(states)
     !! Insertion sort the array states, without assuming that it is sorted
     use CDMSreader__system, only: die
-
     implicit none
-
-    class(asymtop_state), intent(inout), allocatable, target :: states(:)
+    class(asymtop_state), intent(inout) :: states(:)
       !! The array of states
     class(asymtop_state), allocatable :: state
     class(asymtop_state), allocatable :: tmp(:)
     integer :: i, k, n, pos
-
     n = size(states, 1)
-
     allocate(state,  source = states(n))
     allocate(tmp(n), source = states(n))
-
     tmp(1) = states(1)
-
     outer: do i = 2, n
       state = states(i)
       pos = i
-
       inner: do k = i-1, 1, -1
-
         if (state .precedes. tmp(k)) then
           tmp(k+1) = tmp(k)
           pos = k
           cycle inner
         end if
-
         exit inner
-
       enddo inner
       tmp(pos) = state
     enddo outer
-
-    call move_alloc(tmp, states)
-
+    states = tmp
   end subroutine sort_states
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  impure elemental subroutine swap_state(state1, state2)
+  pure subroutine sort_transitions_nohfs(transitions)
+    !! Insertion sort the array transitions, without assuming that it is sorted
+    use CDMSreader__system, only: die
+    implicit none
+    type(asymtop_transition_nohfs), intent(inout) :: transitions(:)
+      !! The array of transitions
+    type(asymtop_transition_nohfs), allocatable :: transition
+    integer :: i, k, n, pos
+    n = size(transitions, 1)
+    allocate(transition,  source = transitions(n))
+    outer: do i = 2, n
+      transition = transitions(i)
+      k = i - 1
+      inner: do while (k .ge. 1)
+      ! inner: do k = i-1, 1, -1
+        if (transition .precedes. transitions(k)) then
+          transitions(k+1) = transitions(k)
+          k = k - 1
+          cycle inner
+        end if
+        exit inner
+      enddo inner
+      transitions(k+1) = transition
+    enddo outer
+  end subroutine sort_transitions_nohfs
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure subroutine sort_transitions_hfs(transitions)
+    !! Insertion sort the array transitions, without assuming that it is sorted
+    use CDMSreader__system, only: die
+    implicit none
+    type(asymtop_transition_hfs), intent(inout) :: transitions(:)
+      !! The array of transitions
+    type(asymtop_transition_hfs), allocatable :: transition
+    integer :: i, k, n, pos
+    n = size(transitions, 1)
+    allocate(transition,  source = transitions(n))
+    outer: do i = 2, n
+      transition = transitions(i)
+      k = i - 1
+      inner: do while (k .ge. 1)
+      ! inner: do k = i-1, 1, -1
+        if (transition .precedes. transitions(k)) then
+          transitions(k+1) = transitions(k)
+          k = k - 1
+          cycle inner
+        end if
+        exit inner
+      enddo inner
+      transitions(k+1) = transition
+    enddo outer
+  end subroutine sort_transitions_hfs
+
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure elemental subroutine swap_state(state1, state2)
     implicit none
     class(asymtop_state), intent(inout) :: state1, state2
     class(asymtop_state), allocatable :: tmp
-    call state_set_eq(tmp, state1)
-    call state_set_eq(state1, state2)
-    call state_set_eq(state2, tmp)
+    allocate(tmp, source=state1)
+    tmp    = state1
+    state1 = state2
+    state2 = tmp
     deallocate(tmp)
   end subroutine swap_state
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
-  impure elemental subroutine state_set_eq(state1, state2)
+  pure elemental subroutine state_set_eq(state1, state2)
     !! Define assignment for two abstract asymtop states
     use CDMSreader__system, only: die
     implicit none
-    class(asymtop_state), intent(out) :: state1
+    class(asymtop_state), intent(inout) :: state1
     class(asymtop_state), intent(in)  :: state2
+    if(same_type_as(state1, state2) .eqv. .false.) call die("STATE1 and STATE2 have different types in assignment")
     state1 % dN     = state2 % dN
     state1 % dKa    = state2 % dKa
     state1 % dKc    = state2 % dKc
@@ -484,6 +721,41 @@ contains
       end select
     end select
   end subroutine state_set_eq
+  ! ------------------------------------------------------------------------------------------------------------------------------ !
+  pure elemental subroutine transition_set_eq(transition1, transition2)
+    !! Define assignment for two abstract asymtop transitions
+    use CDMSreader__system, only: die
+    implicit none
+    class(asymtop_transition), intent(inout) :: transition1
+    class(asymtop_transition), intent(in)  :: transition2
+    if(same_type_as(transition1, transition2) .eqv. .false.) &
+      call die("TRANSITION1 and TRANSITION2 have different types in assignment")
+    transition1 % freq   = transition2 % freq
+    transition1 % EinstA = transition2 % EinstA
+    transition1 % err    = transition2 % err
+    transition1 % dr     = transition2 % dr
+    transition1 % gup    = transition2 % gup
+    select type (t1 => transition1)
+    ! -- two hfs transitions
+    type is (asymtop_transition_hfs)
+      select type (t2 => transition2)
+      type is (asymtop_transition_hfs)
+        t1 % up    = t2 % up
+        t1 % lo    = t2 % lo
+      class default
+        call die("Attempting to assign an hfs transition to a non hfs transition !")
+      end select
+    ! -- two non hfs transitions
+    type is (asymtop_transition_nohfs)
+      select type (t2 => transition2)
+      type is (asymtop_transition_nohfs)
+        t1 % up    = t2 % up
+        t1 % lo    = t2 % lo
+      class default
+        call die("Attempting to assign a non hfs transition to an hfs transition !")
+      end select
+    end select
+  end subroutine transition_set_eq
 
   ! ------------------------------------------------------------------------------------------------------------------------------ !
   pure elemental module function make_asymtop_state_hfs(dN, dKa, dKc, dJ, dItot, dF, E, EinstA) result(state)
