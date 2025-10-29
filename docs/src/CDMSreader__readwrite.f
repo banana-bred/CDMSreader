@@ -720,7 +720,7 @@ subroutine write_states(funit, states)
     charKc   = doubleint2char(states(i) % dKc)
     E = states(i) % E
     EinstA = states(i) % EinstA
-    lifetime = 1/EinstA
+    if(EinstA .ne. 0) lifetime = 1/EinstA
 
     ! -- invcm -> meV
     E = E / au2invcm * au2ev * 1000
